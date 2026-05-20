@@ -606,6 +606,94 @@
     #back-top.show { opacity: 1; transform: translateY(0); }
     #back-top:hover { background: var(--gold-light); }
 
+    /* ── SCROLL OFFSET (compensa a ausência de top nav) ── */
+    section[id] { scroll-margin-top: 1.5rem; }
+    @media (max-width: 768px) { section[id] { scroll-margin-top: 5rem; } }
+
+    /* ── SEARCH ── */
+    .sidebar-search {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(200,148,31,0.15);
+      flex-shrink: 0;
+    }
+    .search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 0.65rem;
+      color: #666;
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+    #search-input {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(200,148,31,0.25);
+      border-radius: 6px;
+      padding: 0.5rem 2rem 0.5rem 2.1rem;
+      color: #ddd;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    #search-input::placeholder { color: #555; }
+    #search-input:focus {
+      border-color: var(--gold);
+      background: rgba(255,255,255,0.1);
+    }
+    #search-clear {
+      position: absolute;
+      right: 0.5rem;
+      background: none;
+      border: none;
+      color: #555;
+      cursor: pointer;
+      padding: 0.2rem;
+      display: none;
+      line-height: 1;
+      font-size: 1rem;
+    }
+    #search-clear.show { display: block; }
+    #search-clear:hover { color: #aaa; }
+
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--gray);
+      font-size: 0.85rem;
+    }
+    .no-results.show { display: block; }
+    .no-results strong { display: block; font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.4; }
+
+    /* ── WHATSAPP BUTTON ── */
+    #whatsapp-btn {
+      position: fixed;
+      bottom: 5rem;
+      right: 1.5rem;
+      width: 48px;
+      height: 48px;
+      background: #25D366;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      z-index: 200;
+      box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #whatsapp-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(37,211,102,0.5);
+    }
+    #whatsapp-btn svg { width: 26px; height: 26px; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 540px) {
       .price-header { grid-template-columns: 1fr 80px 80px; }
@@ -692,6 +780,14 @@
     <div style="margin-top:0.3rem"><span class="sidebar-logo-sub">PANIFICADORA</span></div>
   </div>
 
+  <div class="sidebar-search">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search-input" type="text" placeholder="Buscar no cardápio…" autocomplete="off" spellcheck="false">
+      <button id="search-clear" title="Limpar">✕</button>
+    </div>
+  </div>
+
   <nav class="sidebar-nav">
     <a href="#cafes"><span class="nav-icon">☕</span>Cafés</a>
     <a href="#bebidas"><span class="nav-icon">🧊</span>Bebidas Geladas</a>
@@ -731,11 +827,107 @@
 <!-- ════════════════════════════════ CONTENT ════════════════════════════ -->
 <div class="section-wrap">
 
-  <!-- Food illustration header (appears on all content pages) -->
-  <div class="page-header">
-    <div class="page-header-pattern" aria-hidden="true">
-      ☕ 🍞 ☕ 🧃 ☕ 🥐 ☕ 🫖 ☕ 🍞 ☕ 🧃 ☕ 🥐 ☕ 🫖 ☕ 🍞 ☕ 🧃 ☕ 🥐 ☕
-    </div>
+  <!-- Food illustration header -->
+  <div class="page-header" aria-hidden="true">
+    <svg viewBox="0 0 900 56" fill="none" xmlns="http://www.w3.org/2000/svg"
+         style="width:100%;height:56px;display:block;opacity:0.55"
+         stroke="#C8941F" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+
+      <!-- Xícara 1 -->
+      <rect x="18" y="22" width="24" height="20" rx="3"/>
+      <path d="M42 27 Q52 27 52 33 Q52 39 42 39"/>
+      <line x1="12" y1="42" x2="54" y2="42"/>
+      <path d="M25 20 Q23 14 25 9"/>
+      <path d="M30 18 Q28 12 30 7"/>
+      <path d="M35 20 Q33 14 35 9"/>
+
+      <!-- Pão -->
+      <path d="M78 42 Q78 26 100 24 Q122 26 122 42 L119 47 H81 Z"/>
+      <path d="M84 36 Q92 30 100 35 Q108 40 116 35"/>
+
+      <!-- Copo de suco -->
+      <path d="M148 20 L154 46 H170 L176 20 Z"/>
+      <line x1="148" y1="30" x2="176" y2="30"/>
+      <line x1="168" y1="13" x2="172" y2="46"/>
+      <circle cx="164" cy="17" r="4" stroke-width="1"/>
+
+      <!-- Bule / Cafeteira -->
+      <path d="M200 18 Q193 18 193 28 Q193 44 206 44 L218 44 Q224 44 224 34 Q224 18 218 18 Z"/>
+      <path d="M224 26 Q234 24 234 32 Q234 40 224 38"/>
+      <path d="M200 18 L203 11 L215 11 L218 18"/>
+      <path d="M202 11 Q209 6 216 11"/>
+      <ellipse cx="209" cy="44" rx="10" ry="3"/>
+
+      <!-- Croissant -->
+      <path d="M258 38 Q258 24 270 22 Q282 20 290 28 Q282 26 276 32 Q270 38 278 44 Q268 46 258 38 Z"/>
+      <path d="M276 32 Q284 28 290 28"/>
+
+      <!-- Xícara 2 menor -->
+      <rect x="312" y="26" width="20" height="16" rx="2.5"/>
+      <path d="M332 30 Q340 30 340 34 Q340 38 332 38"/>
+      <line x1="308" y1="42" x2="348" y2="42"/>
+      <path d="M319 24 Q317 19 319 15"/>
+      <path d="M322 23 Q320 17 322 13"/>
+
+      <!-- Pão de queijo / bola -->
+      <circle cx="376" cy="34" r="12"/>
+      <path d="M368 28 Q376 24 384 28"/>
+      <path d="M366 34 Q376 38 386 34"/>
+
+      <!-- Vitamina / copo alto -->
+      <rect x="406" y="18" width="22" height="30" rx="3"/>
+      <path d="M406 30 Q417 26 428 30"/>
+      <path d="M411 13 Q417 9 423 13"/>
+      <line x1="419" y1="9" x2="421" y2="18"/>
+
+      <!-- Omelete / prato -->
+      <ellipse cx="476" cy="40" rx="18" ry="5"/>
+      <path d="M458 40 Q458 24 476 22 Q494 24 494 40"/>
+      <path d="M462 34 Q470 28 480 32 Q488 28 492 34"/>
+
+      <!-- Xícara 3 -->
+      <rect x="516" y="22" width="24" height="20" rx="3"/>
+      <path d="M540 27 Q550 27 550 33 Q550 39 540 39"/>
+      <line x1="510" y1="42" x2="552" y2="42"/>
+      <path d="M523 20 Q521 14 523 9"/>
+      <path d="M528 18 Q526 12 528 7"/>
+      <path d="M533 20 Q531 14 533 9"/>
+
+      <!-- Pão novamente -->
+      <path d="M576 42 Q576 26 598 24 Q620 26 620 42 L617 47 H579 Z"/>
+      <path d="M582 36 Q590 30 598 35 Q606 40 614 35"/>
+
+      <!-- Copo de suco 2 -->
+      <path d="M646 20 L652 46 H668 L674 20 Z"/>
+      <line x1="646" y1="30" x2="674" y2="30"/>
+      <line x1="666" y1="13" x2="670" y2="46"/>
+      <circle cx="662" cy="17" r="4" stroke-width="1"/>
+
+      <!-- Bule 2 -->
+      <path d="M700 18 Q693 18 693 28 Q693 44 706 44 L718 44 Q724 44 724 34 Q724 18 718 18 Z"/>
+      <path d="M724 26 Q734 24 734 32 Q734 40 724 38"/>
+      <path d="M700 18 L703 11 L715 11 L718 18"/>
+      <path d="M702 11 Q709 6 716 11"/>
+
+      <!-- Croissant 2 -->
+      <path d="M758 38 Q758 24 770 22 Q782 20 790 28 Q782 26 776 32 Q770 38 778 44 Q768 46 758 38 Z"/>
+      <path d="M776 32 Q784 28 790 28"/>
+
+      <!-- Xícara 4 -->
+      <rect x="812" y="26" width="20" height="16" rx="2.5"/>
+      <path d="M832 30 Q840 30 840 34 Q840 38 832 38"/>
+      <line x1="808" y1="42" x2="848" y2="42"/>
+      <path d="M819 24 Q817 19 819 15"/>
+      <path d="M822 23 Q820 17 822 13"/>
+
+      <!-- Linha decorativa de fundo -->
+      <line x1="0" y1="50" x2="900" y2="50" stroke-width="0.6" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <div class="no-results" id="no-results">
+    <strong>☕</strong>
+    Nenhum item encontrado. Tente outro termo.
   </div>
 
   <!-- ── CAFÉS ── -->
@@ -1188,18 +1380,28 @@
 
 </div><!-- /#main -->
 
+<!-- ── WhatsApp ── -->
+<a id="whatsapp-btn" href="https://wa.me/5513991622975" target="_blank" rel="noopener" title="Fale pelo WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+  </svg>
+</a>
+
 <!-- ── Back to top ── -->
 <button id="back-top" title="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
 <script>
-  const sidebar    = document.getElementById('sidebar');
-  const toggle     = document.getElementById('sidebar-toggle');
-  const overlay    = document.getElementById('sidebar-overlay');
-  const backTop    = document.getElementById('back-top');
-  const navLinks   = document.querySelectorAll('.sidebar-nav a');
-  const sections   = document.querySelectorAll('section[id]');
+  const sidebar   = document.getElementById('sidebar');
+  const toggle    = document.getElementById('sidebar-toggle');
+  const overlay   = document.getElementById('sidebar-overlay');
+  const backTop   = document.getElementById('back-top');
+  const navLinks  = document.querySelectorAll('.sidebar-nav a');
+  const sections  = document.querySelectorAll('section[id]');
+  const searchInput = document.getElementById('search-input');
+  const searchClear = document.getElementById('search-clear');
+  const noResults   = document.getElementById('no-results');
 
   // ── Sidebar toggle (mobile)
   function openSidebar() {
@@ -1218,14 +1420,14 @@
     sidebar.classList.contains('open') ? closeSidebar() : openSidebar()
   );
   overlay.addEventListener('click', closeSidebar);
-
-  // Close sidebar on link click (mobile)
   navLinks.forEach(a => a.addEventListener('click', () => {
     if (window.innerWidth <= 768) closeSidebar();
   }));
 
   // ── Active link on scroll
+  let searchActive = false;
   const observer = new IntersectionObserver(entries => {
+    if (searchActive) return;
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         navLinks.forEach(a => a.classList.remove('active'));
@@ -1237,8 +1439,55 @@
       }
     });
   }, { rootMargin: '-30% 0px -60% 0px' });
-
   sections.forEach(s => observer.observe(s));
+
+  // ── Search
+  function runSearch(q) {
+    searchActive = !!q;
+    searchClear.classList.toggle('show', !!q);
+    noResults.classList.remove('show');
+
+    const catSections = document.querySelectorAll('.cat-section');
+    const seps = document.querySelectorAll('.section-sep');
+    const pageHeader = document.querySelector('.page-header');
+
+    if (!q) {
+      catSections.forEach(s => s.style.display = '');
+      seps.forEach(s => s.style.display = '');
+      document.querySelectorAll('.item').forEach(i => i.style.display = '');
+      pageHeader.style.display = '';
+      navLinks.forEach(a => a.classList.remove('active'));
+      return;
+    }
+
+    pageHeader.style.display = 'none';
+    seps.forEach(s => s.style.display = 'none');
+
+    let totalVisible = 0;
+    catSections.forEach(section => {
+      const items = section.querySelectorAll('.item');
+      let visible = 0;
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        const match = text.includes(q);
+        item.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+      section.style.display = visible ? '' : 'none';
+      totalVisible += visible;
+    });
+
+    noResults.classList.toggle('show', totalVisible === 0);
+  }
+
+  searchInput.addEventListener('input', () => {
+    runSearch(searchInput.value.toLowerCase().trim());
+  });
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    runSearch('');
+    searchInput.focus();
+  });
 
   // ── Back to top
   window.addEventListener('scroll', () => {
