@@ -11,6 +11,7 @@
     :root {
       --cream: #f4efe5;
       --cream-dark: #ebe5d7;
+      --cream-alt: #ede6d6;
       --gold: #C8941F;
       --gold-light: #e2b84a;
       --gold-pale: #f5e4b0;
@@ -18,6 +19,8 @@
       --gray: #555;
       --red: #c0392b;
       --white: #fff;
+      --card-bg: #fffdf8;
+      --card-shadow: 0 2px 10px rgba(100,70,20,0.08);
     }
 
     html { scroll-behavior: smooth; }
@@ -215,15 +218,29 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background-color: var(--cream);
+      background:
+        radial-gradient(ellipse at 60% 40%, rgba(200,148,31,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse at 20% 80%, rgba(107,79,42,0.12) 0%, transparent 55%),
+        linear-gradient(160deg, #fdf6e8 0%, #f4efe5 45%, #e8d9be 100%);
       overflow: hidden;
       z-index: 1;
     }
 
+    /* grain texture no hero */
+    #hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .hero-corner {
       position: absolute;
-      width: 160px;
-      opacity: 0.55;
+      width: 180px;
+      opacity: 0.7;
+      z-index: 1;
     }
     .hero-corner.tl { top: 0; left: 0; }
     .hero-corner.br { bottom: 0; right: 0; transform: rotate(180deg); }
@@ -232,6 +249,11 @@
       text-align: center;
       padding: 2rem;
       z-index: 2;
+      animation: heroIn 1s ease both;
+    }
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .logo-icon {
@@ -334,12 +356,21 @@
       letter-spacing: 0.5rem;
     }
 
-    /* ── CATEGORY SECTION ── */
+    /* ── FADE-IN ON SCROLL ── */
     .cat-section {
-      padding: 2.5rem 1rem 1rem;
+      padding: 2.5rem 1.5rem 1.5rem;
       max-width: 860px;
       margin: 0 auto;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      border-radius: 16px;
     }
+    .cat-section.visible { opacity: 1; transform: translateY(0); }
+
+    /* Alternating backgrounds */
+    .cat-section:nth-of-type(odd)  { background: var(--card-bg); }
+    .cat-section:nth-of-type(even) { background: var(--cream-alt); }
 
     .cat-title {
       display: flex;
@@ -414,24 +445,43 @@
       text-align: right;
     }
 
-    /* ── ITEM ROW ── */
+    /* ── ITEM CARD ── */
     .item {
       display: grid;
-      grid-template-columns: 3rem 1fr auto;
-      gap: 0.25rem 0.5rem;
-      align-items: start;
-      padding: 0.6rem 0;
-      border-bottom: 1px solid rgba(200,148,31,0.12);
-      transition: background 0.15s;
+      grid-template-columns: 2.4rem 1fr auto;
+      gap: 0.25rem 0.75rem;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background: var(--white);
+      border: 1px solid rgba(200,148,31,0.14);
+      border-radius: 10px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      animation: itemIn 0.4s ease both;
     }
-    .item:hover { background: rgba(200,148,31,0.04); border-radius: 6px; }
-    .item:last-child { border-bottom: none; }
+    @keyframes itemIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(100,70,20,0.12);
+    }
+    .item:last-child { margin-bottom: 0; }
+    .item.highlight { border-left: 3px solid var(--red); }
 
     .item-code {
-      font-size: 0.7rem;
-      color: var(--gold);
-      font-weight: 600;
-      padding-top: 1px;
+      font-size: 0.62rem;
+      color: var(--white);
+      background: var(--gold);
+      font-weight: 700;
+      padding: 0.18rem 0.3rem;
+      border-radius: 4px;
+      text-align: center;
+      letter-spacing: 0.02em;
+      align-self: start;
+      margin-top: 0.1rem;
     }
 
     .item-info { }
@@ -451,30 +501,51 @@
     }
 
     .item-price {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--dark);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.1rem;
+      background: var(--gold-pale);
+      border: 1px solid rgba(200,148,31,0.3);
+      border-radius: 20px;
+      padding: 0.2rem 0.65rem;
       white-space: nowrap;
-      text-align: right;
+      color: #7a5010;
+    }
+    .item-price .price-currency {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .item-price .price-value {
+      font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
     }
 
-    .item.highlight .item-name,
-    .item.highlight .item-price { color: var(--red); }
+    .item.highlight .item-name { color: var(--red); }
+    .item.highlight .item-price { background: #fde8e8; border-color: rgba(192,57,43,0.3); color: var(--red); }
 
     /* Two-price item */
     .item-prices {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 0.15rem;
+      gap: 0.25rem;
       min-width: 90px;
     }
     .item-prices .price-small,
     .item-prices .price-large {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--dark);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.1rem;
+      background: var(--gold-pale);
+      border: 1px solid rgba(200,148,31,0.3);
+      border-radius: 20px;
+      padding: 0.15rem 0.5rem;
+      color: #7a5010;
       white-space: nowrap;
+      font-size: 0.8rem;
+      font-weight: 700;
     }
 
     /* Lanche with Q/F */
@@ -497,33 +568,28 @@
       letter-spacing: 0.05em;
     }
     .qf-price {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--dark);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.1rem;
+      background: var(--gold-pale);
+      border: 1px solid rgba(200,148,31,0.3);
+      border-radius: 20px;
+      padding: 0.15rem 0.5rem;
+      color: #7a5010;
       white-space: nowrap;
+      font-size: 0.78rem;
+      font-weight: 700;
     }
 
-    /* ── DIVIDER between sub-categories on same page ── */
-    .sub-divider {
-      height: 2rem;
-    }
-
-    /* ── GOLD ACCENT SHAPE ── */
-    .gold-accent {
-      width: 100%;
-      height: 120px;
-      background: var(--gold);
-      border-radius: 50% 50% 0 0 / 60px 60px 0 0;
-      margin-top: 1.5rem;
-      opacity: 0.85;
-    }
-
-    /* ── SECTION SEPARATOR ── */
+    /* ── SECTION SEPARATOR ORNAMENTADO ── */
     .section-sep {
-      height: 3px;
-      background: linear-gradient(to right, transparent, var(--gold-pale), transparent);
-      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 2rem;
+      gap: 0;
     }
+    .section-sep svg { width: 100%; max-width: 500px; height: 24px; }
 
     /* ── FOOTER ── */
     #footer {
@@ -962,7 +1028,20 @@
     <div class="item"><span class="item-code">1648</span><div class="item-info"><span class="item-name">Chocolate Especial</span></div><div class="item-prices"><span class="price-small">R$ 9,00</span><span class="price-large">R$ 14,90</span></div></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── BEBIDAS GELADAS ── -->
   <section id="bebidas" class="cat-section">
@@ -985,7 +1064,20 @@
     <div class="item"><span class="item-code">787</span><div class="item-info"><span class="item-name">Ovomaltine</span></div><div class="item-prices"><span class="price-small">R$ 10,00</span><span class="price-large">R$ 14,90</span></div></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── CHÁS ── -->
   <section id="chas" class="cat-section">
@@ -996,14 +1088,27 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">1660</span><div class="item-info"><span class="item-name">Chá de Camomila</span></div><span class="item-price">R$ 9,00</span></div>
-    <div class="item"><span class="item-code">1661</span><div class="item-info"><span class="item-name">Chá de Capim Cidreira</span></div><span class="item-price">R$ 9,00</span></div>
-    <div class="item"><span class="item-code">1662</span><div class="item-info"><span class="item-name">Chá Verde</span></div><span class="item-price">R$ 9,00</span></div>
-    <div class="item"><span class="item-code">1663</span><div class="item-info"><span class="item-name">Chá de Erva Doce</span></div><span class="item-price">R$ 9,00</span></div>
-    <div class="item"><span class="item-code">1831</span><div class="item-info"><span class="item-name">Chá Matte</span></div><span class="item-price">R$ 9,00</span></div>
+    <div class="item"><span class="item-code">1660</span><div class="item-info"><span class="item-name">Chá de Camomila</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">9,00</span></span></div>
+    <div class="item"><span class="item-code">1661</span><div class="item-info"><span class="item-name">Chá de Capim Cidreira</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">9,00</span></span></div>
+    <div class="item"><span class="item-code">1662</span><div class="item-info"><span class="item-name">Chá Verde</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">9,00</span></span></div>
+    <div class="item"><span class="item-code">1663</span><div class="item-info"><span class="item-name">Chá de Erva Doce</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">9,00</span></span></div>
+    <div class="item"><span class="item-code">1831</span><div class="item-info"><span class="item-name">Chá Matte</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">9,00</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── TAPIOCAS ── -->
   <section id="tapiocas" class="cat-section">
@@ -1014,31 +1119,44 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">059</span><div class="item-info"><span class="item-name">Calabresa</span><p class="item-desc">Mussarela, tomate, cebola e azeitona</p></div><span class="item-price">R$ 24,90</span></div>
-    <div class="item"><span class="item-code">060</span><div class="item-info"><span class="item-name">Calabresa</span><p class="item-desc">Mussarela, catupiry, tomate, cebola, azeite e orégano</p></div><span class="item-price">R$ 29,90</span></div>
-    <div class="item"><span class="item-code">061</span><div class="item-info"><span class="item-name">Carne Seca</span><p class="item-desc">Mussarela, tomate, cebola e azeitona</p></div><span class="item-price">R$ 27,90</span></div>
-    <div class="item"><span class="item-code">062</span><div class="item-info"><span class="item-name">Carne Seca</span><p class="item-desc">03 queijos, tomate, cebola, azeite e orégano</p></div><span class="item-price">R$ 29,90</span></div>
-    <div class="item"><span class="item-code">063</span><div class="item-info"><span class="item-name">Frango</span><p class="item-desc">Mussarela, milho, tomate e azeite</p></div><span class="item-price">R$ 25,90</span></div>
-    <div class="item"><span class="item-code">064</span><div class="item-info"><span class="item-name">Frango</span><p class="item-desc">03 queijos, milho, tomate, cebola, azeite e orégano</p></div><span class="item-price">R$ 29,90</span></div>
-    <div class="item"><span class="item-code">065</span><div class="item-info"><span class="item-name">Mussarela</span><p class="item-desc">Presunto, calabresa, catupiry, tomate, cebola, azeite e orégano</p></div><span class="item-price">R$ 28,00</span></div>
-    <div class="item"><span class="item-code">066</span><div class="item-info"><span class="item-name">Tapioca Light</span><p class="item-desc">Queijo branco e peito de peru</p></div><span class="item-price">R$ 28,90</span></div>
-    <div class="item"><span class="item-code">067</span><div class="item-info"><span class="item-name">Atum</span><p class="item-desc">Queijo, tomate, cebola e azeitona</p></div><span class="item-price">R$ 28,90</span></div>
-    <div class="item"><span class="item-code">068</span><div class="item-info"><span class="item-name">Brócolis</span><p class="item-desc">Queijo, bacon, tomate, cebola, catupiry e azeitona</p></div><span class="item-price">R$ 28,90</span></div>
-    <div class="item"><span class="item-code">069</span><div class="item-info"><span class="item-name">Três Queijos</span><p class="item-desc">03 queijos, tomate, cebola, azeite e orégano</p></div><span class="item-price">R$ 28,90</span></div>
-    <div class="item"><span class="item-code">070</span><div class="item-info"><span class="item-name">Dois Queijos</span><p class="item-desc">02 queijos, tomate, cebola, azeite e orégano</p></div><span class="item-price">R$ 25,90</span></div>
-    <div class="item"><span class="item-code">072</span><div class="item-info"><span class="item-name">Tapioca, massa c/ Manteiga</span></div><span class="item-price">R$ 12,90</span></div>
-    <div class="item"><span class="item-code">073</span><div class="item-info"><span class="item-name">Tapioca c/ Ovo</span><p class="item-desc">2 ovos</p></div><span class="item-price">R$ 19,00</span></div>
-    <div class="item"><span class="item-code">074</span><div class="item-info"><span class="item-name">Tapioca da Casa</span><p class="item-desc">Calabresa, bacon, tomate, cebola, azeite, orégano, catupiry e mussarela</p></div><span class="item-price">R$ 29,90</span></div>
-    <div class="item"><span class="item-code">075</span><div class="item-info"><span class="item-name">Tradicional</span><p class="item-desc">Coco c/ leite condensado</p></div><span class="item-price">R$ 26,90</span></div>
-    <div class="item"><span class="item-code">089</span><div class="item-info"><span class="item-name">Banana</span><p class="item-desc">Canela e leite condensado</p></div><span class="item-price">R$ 26,90</span></div>
-    <div class="item"><span class="item-code">093</span><div class="item-info"><span class="item-name">Morango c/ Nutela</span></div><span class="item-price">R$ 28,90</span></div>
-    <div class="item"><span class="item-code">750</span><div class="item-info"><span class="item-name">Tapioca c/ Mussarela</span></div><span class="item-price">R$ 25,90</span></div>
-    <div class="item"><span class="item-code">751</span><div class="item-info"><span class="item-name">Tapioca Mista</span><p class="item-desc">Mussarela e presunto</p></div><span class="item-price">R$ 26,90</span></div>
-    <div class="item"><span class="item-code">752</span><div class="item-info"><span class="item-name">Tapioca c/ Queijo Branco</span></div><span class="item-price">R$ 26,90</span></div>
-    <div class="item"><span class="item-code">766</span><div class="item-info"><span class="item-name">Crepioca – acréscimo</span></div><span class="item-price">R$ 5,00</span></div>
+    <div class="item"><span class="item-code">059</span><div class="item-info"><span class="item-name">Calabresa</span><p class="item-desc">Mussarela, tomate, cebola e azeitona</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">24,90</span></span></div>
+    <div class="item"><span class="item-code">060</span><div class="item-info"><span class="item-name">Calabresa</span><p class="item-desc">Mussarela, catupiry, tomate, cebola, azeite e orégano</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">29,90</span></span></div>
+    <div class="item"><span class="item-code">061</span><div class="item-info"><span class="item-name">Carne Seca</span><p class="item-desc">Mussarela, tomate, cebola e azeitona</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">27,90</span></span></div>
+    <div class="item"><span class="item-code">062</span><div class="item-info"><span class="item-name">Carne Seca</span><p class="item-desc">03 queijos, tomate, cebola, azeite e orégano</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">29,90</span></span></div>
+    <div class="item"><span class="item-code">063</span><div class="item-info"><span class="item-name">Frango</span><p class="item-desc">Mussarela, milho, tomate e azeite</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">25,90</span></span></div>
+    <div class="item"><span class="item-code">064</span><div class="item-info"><span class="item-name">Frango</span><p class="item-desc">03 queijos, milho, tomate, cebola, azeite e orégano</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">29,90</span></span></div>
+    <div class="item"><span class="item-code">065</span><div class="item-info"><span class="item-name">Mussarela</span><p class="item-desc">Presunto, calabresa, catupiry, tomate, cebola, azeite e orégano</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,00</span></span></div>
+    <div class="item"><span class="item-code">066</span><div class="item-info"><span class="item-name">Tapioca Light</span><p class="item-desc">Queijo branco e peito de peru</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,90</span></span></div>
+    <div class="item"><span class="item-code">067</span><div class="item-info"><span class="item-name">Atum</span><p class="item-desc">Queijo, tomate, cebola e azeitona</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,90</span></span></div>
+    <div class="item"><span class="item-code">068</span><div class="item-info"><span class="item-name">Brócolis</span><p class="item-desc">Queijo, bacon, tomate, cebola, catupiry e azeitona</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,90</span></span></div>
+    <div class="item"><span class="item-code">069</span><div class="item-info"><span class="item-name">Três Queijos</span><p class="item-desc">03 queijos, tomate, cebola, azeite e orégano</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,90</span></span></div>
+    <div class="item"><span class="item-code">070</span><div class="item-info"><span class="item-name">Dois Queijos</span><p class="item-desc">02 queijos, tomate, cebola, azeite e orégano</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">25,90</span></span></div>
+    <div class="item"><span class="item-code">072</span><div class="item-info"><span class="item-name">Tapioca, massa c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,90</span></span></div>
+    <div class="item"><span class="item-code">073</span><div class="item-info"><span class="item-name">Tapioca c/ Ovo</span><p class="item-desc">2 ovos</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">19,00</span></span></div>
+    <div class="item"><span class="item-code">074</span><div class="item-info"><span class="item-name">Tapioca da Casa</span><p class="item-desc">Calabresa, bacon, tomate, cebola, azeite, orégano, catupiry e mussarela</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">29,90</span></span></div>
+    <div class="item"><span class="item-code">075</span><div class="item-info"><span class="item-name">Tradicional</span><p class="item-desc">Coco c/ leite condensado</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">26,90</span></span></div>
+    <div class="item"><span class="item-code">089</span><div class="item-info"><span class="item-name">Banana</span><p class="item-desc">Canela e leite condensado</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">26,90</span></span></div>
+    <div class="item"><span class="item-code">093</span><div class="item-info"><span class="item-name">Morango c/ Nutela</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,90</span></span></div>
+    <div class="item"><span class="item-code">750</span><div class="item-info"><span class="item-name">Tapioca c/ Mussarela</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">25,90</span></span></div>
+    <div class="item"><span class="item-code">751</span><div class="item-info"><span class="item-name">Tapioca Mista</span><p class="item-desc">Mussarela e presunto</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">26,90</span></span></div>
+    <div class="item"><span class="item-code">752</span><div class="item-info"><span class="item-name">Tapioca c/ Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">26,90</span></span></div>
+    <div class="item"><span class="item-code">766</span><div class="item-info"><span class="item-name">Crepioca – acréscimo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── PÃES QUENTES ── -->
   <section id="paes-quentes" class="cat-section">
@@ -1049,59 +1167,72 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">676</span><div class="item-info"><span class="item-name">Pão c/ Manteiga</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">678</span><div class="item-info"><span class="item-name">Pão c/ Margarina</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">700</span><div class="item-info"><span class="item-name">Pão c/ Requeijão</span></div><span class="item-price">R$ 8,00</span></div>
-    <div class="item"><span class="item-code">696</span><div class="item-info"><span class="item-name">Pão Integral c/ Manteiga</span></div><span class="item-price">R$ 6,50</span></div>
-    <div class="item"><span class="item-code">698</span><div class="item-info"><span class="item-name">Pão Integral c/ Margarina</span></div><span class="item-price">R$ 6,50</span></div>
-    <div class="item"><span class="item-code">704</span><div class="item-info"><span class="item-name">Pão Integral c/ Requeijão</span></div><span class="item-price">R$ 8,50</span></div>
-    <div class="item"><span class="item-code">680</span><div class="item-info"><span class="item-name">Pão Canoa c/ Manteiga</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">682</span><div class="item-info"><span class="item-name">Pão Canoa c/ Margarina</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">684</span><div class="item-info"><span class="item-name">Pão Cará c/ Manteiga</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">686</span><div class="item-info"><span class="item-name">Pão Cará c/ Margarina</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">701</span><div class="item-info"><span class="item-name">Pão Cará c/ Requeijão</span></div><span class="item-price">R$ 8,00</span></div>
-    <div class="item"><span class="item-code">688</span><div class="item-info"><span class="item-name">Pão de Milho c/ Manteiga</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">690</span><div class="item-info"><span class="item-name">Pão de Milho c/ Margarina</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">1683</span><div class="item-info"><span class="item-name">Pão de Milho c/ Requeijão</span></div><span class="item-price">R$ 8,00</span></div>
-    <div class="item"><span class="item-code">706</span><div class="item-info"><span class="item-name">Pão c/ Mortadela</span></div><span class="item-price">R$ 10,00</span></div>
-    <div class="item"><span class="item-code">708</span><div class="item-info"><span class="item-name">Pão c/ Mortadela Ceratti</span></div><span class="item-price">R$ 13,50</span></div>
-    <div class="item"><span class="item-code">710</span><div class="item-info"><span class="item-name">Pão c/ Mortadela e Queijo</span></div><span class="item-price">R$ 12,00</span></div>
-    <div class="item"><span class="item-code">712</span><div class="item-info"><span class="item-name">Pão c/ Salame</span></div><span class="item-price">R$ 15,00</span></div>
-    <div class="item"><span class="item-code">714</span><div class="item-info"><span class="item-name">Pão c/ Salame e Queijo</span></div><span class="item-price">R$ 16,90</span></div>
-    <div class="item"><span class="item-code">734</span><div class="item-info"><span class="item-name">Pão c/ Poleguinho</span></div><span class="item-price">R$ 8,00</span></div>
-    <div class="item"><span class="item-code">1669</span><div class="item-info"><span class="item-name">Pão c/ Queijo Prato</span></div><span class="item-price">R$ 11,90</span></div>
-    <div class="item"><span class="item-code">1671</span><div class="item-info"><span class="item-name">Pão c/ Mussarela</span></div><span class="item-price">R$ 11,90</span></div>
-    <div class="item"><span class="item-code">1673</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco</span></div><span class="item-price">R$ 13,90</span></div>
-    <div class="item"><span class="item-code">1675</span><div class="item-info"><span class="item-name">Pão c/ Ceratti e Queijo</span></div><span class="item-price">R$ 15,90</span></div>
-    <div class="item"><span class="item-code">1688</span><div class="item-info"><span class="item-name">Pão Carteira c/ Manteiga</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">1690</span><div class="item-info"><span class="item-name">Pão Carteira c/ Margarina</span></div><span class="item-price">R$ 5,50</span></div>
-    <div class="item"><span class="item-code">1692</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Requeijão</span></div><span class="item-price">R$ 8,00</span></div>
-    <div class="item"><span class="item-code">1697</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Requeijão</span></div><span class="item-price">R$ 10,00</span></div>
-    <div class="item"><span class="item-code">1699</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Queijo</span></div><span class="item-price">R$ 11,00</span></div>
-    <div class="item"><span class="item-code">3328</span><div class="item-info"><span class="item-name">Pão de Queijo Gourmet c/ Requeijão</span></div><span class="item-price">R$ 11,00</span></div>
-    <div class="item"><span class="item-code">715</span><div class="item-info"><span class="item-name">Pão c/ Ovo</span></div><span class="item-price">R$ 7,50</span></div>
-    <div class="item highlight"><span class="item-code">740</span><div class="item-info"><span class="item-name">Pão Francês c/ Ovo e Requeijão</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">1038</span><div class="item-info"><span class="item-name">Pão Integral c/ Ovo</span></div><span class="item-price">R$ 9,50</span></div>
-    <div class="item"><span class="item-code">1676</span><div class="item-info"><span class="item-name">Pão c/ Ovo e Queijo</span></div><span class="item-price">R$ 12,50</span></div>
-    <div class="item"><span class="item-code">1677</span><div class="item-info"><span class="item-name">Pão c/ Ovo e Queijo Branco</span></div><span class="item-price">R$ 14,90</span></div>
-    <div class="item"><span class="item-code">1679</span><div class="item-info"><span class="item-name">Pão Cará c/ Ovo</span></div><span class="item-price">R$ 8,50</span></div>
-    <div class="item"><span class="item-code">1680</span><div class="item-info"><span class="item-name">Pão Cará c/ Ovo e Queijo</span></div><span class="item-price">R$ 12,50</span></div>
-    <div class="item"><span class="item-code">1681</span><div class="item-info"><span class="item-name">Pão c/ Ovo e Queijo Branco</span></div><span class="item-price">R$ 14,90</span></div>
-    <div class="item"><span class="item-code">1684</span><div class="item-info"><span class="item-name">Pão de Milho c/ Ovo</span></div><span class="item-price">R$ 8,50</span></div>
-    <div class="item"><span class="item-code">1685</span><div class="item-info"><span class="item-name">Pão de Milho c/ Ovo e Queijo</span></div><span class="item-price">R$ 12,50</span></div>
-    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Pão de Milho c/ Ovo e Queijo Branco</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">1693</span><div class="item-info"><span class="item-name">Pão Carteira c/ Ovo</span></div><span class="item-price">R$ 7,50</span></div>
-    <div class="item"><span class="item-code">1694</span><div class="item-info"><span class="item-name">Pão Carteira c/ Ovo e Queijo</span></div><span class="item-price">R$ 12,50</span></div>
-    <div class="item"><span class="item-code">1695</span><div class="item-info"><span class="item-name">Pão Carteira c/ Ovo e Queijo Branco</span></div><span class="item-price">R$ 14,90</span></div>
-    <div class="item highlight"><span class="item-code">1714</span><div class="item-info"><span class="item-name">Pão, Ovo e Mortadela</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">1705</span><div class="item-info"><span class="item-name">Calabresa c/ Pão</span></div><span class="item-price">R$ 16,90</span></div>
-    <div class="item"><span class="item-code">1706</span><div class="item-info"><span class="item-name">Calabresa no Pão c/ Queijo</span></div><span class="item-price">R$ 18,90</span></div>
-    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Calabresa no Pão c/ Cebola</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Acréscimo Hamburguer</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Acréscimo Bacon</span></div><span class="item-price">R$ 7,00</span></div>
+    <div class="item"><span class="item-code">676</span><div class="item-info"><span class="item-name">Pão c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">678</span><div class="item-info"><span class="item-name">Pão c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">700</span><div class="item-info"><span class="item-name">Pão c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,00</span></span></div>
+    <div class="item"><span class="item-code">696</span><div class="item-info"><span class="item-name">Pão Integral c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">6,50</span></span></div>
+    <div class="item"><span class="item-code">698</span><div class="item-info"><span class="item-name">Pão Integral c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">6,50</span></span></div>
+    <div class="item"><span class="item-code">704</span><div class="item-info"><span class="item-name">Pão Integral c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,50</span></span></div>
+    <div class="item"><span class="item-code">680</span><div class="item-info"><span class="item-name">Pão Canoa c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">682</span><div class="item-info"><span class="item-name">Pão Canoa c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">684</span><div class="item-info"><span class="item-name">Pão Cará c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">686</span><div class="item-info"><span class="item-name">Pão Cará c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">701</span><div class="item-info"><span class="item-name">Pão Cará c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,00</span></span></div>
+    <div class="item"><span class="item-code">688</span><div class="item-info"><span class="item-name">Pão de Milho c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">690</span><div class="item-info"><span class="item-name">Pão de Milho c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">1683</span><div class="item-info"><span class="item-name">Pão de Milho c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,00</span></span></div>
+    <div class="item"><span class="item-code">706</span><div class="item-info"><span class="item-name">Pão c/ Mortadela</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">10,00</span></span></div>
+    <div class="item"><span class="item-code">708</span><div class="item-info"><span class="item-name">Pão c/ Mortadela Ceratti</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">13,50</span></span></div>
+    <div class="item"><span class="item-code">710</span><div class="item-info"><span class="item-name">Pão c/ Mortadela e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,00</span></span></div>
+    <div class="item"><span class="item-code">712</span><div class="item-info"><span class="item-name">Pão c/ Salame</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">15,00</span></span></div>
+    <div class="item"><span class="item-code">714</span><div class="item-info"><span class="item-name">Pão c/ Salame e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">16,90</span></span></div>
+    <div class="item"><span class="item-code">734</span><div class="item-info"><span class="item-name">Pão c/ Poleguinho</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,00</span></span></div>
+    <div class="item"><span class="item-code">1669</span><div class="item-info"><span class="item-name">Pão c/ Queijo Prato</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">11,90</span></span></div>
+    <div class="item"><span class="item-code">1671</span><div class="item-info"><span class="item-name">Pão c/ Mussarela</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">11,90</span></span></div>
+    <div class="item"><span class="item-code">1673</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">13,90</span></span></div>
+    <div class="item"><span class="item-code">1675</span><div class="item-info"><span class="item-name">Pão c/ Ceratti e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">15,90</span></span></div>
+    <div class="item"><span class="item-code">1688</span><div class="item-info"><span class="item-name">Pão Carteira c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">1690</span><div class="item-info"><span class="item-name">Pão Carteira c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">1692</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,00</span></span></div>
+    <div class="item"><span class="item-code">1697</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">10,00</span></span></div>
+    <div class="item"><span class="item-code">1699</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">11,00</span></span></div>
+    <div class="item"><span class="item-code">3328</span><div class="item-info"><span class="item-name">Pão de Queijo Gourmet c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">11,00</span></span></div>
+    <div class="item"><span class="item-code">715</span><div class="item-info"><span class="item-name">Pão c/ Ovo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,50</span></span></div>
+    <div class="item highlight"><span class="item-code">740</span><div class="item-info"><span class="item-name">Pão Francês c/ Ovo e Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">1038</span><div class="item-info"><span class="item-name">Pão Integral c/ Ovo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">9,50</span></span></div>
+    <div class="item"><span class="item-code">1676</span><div class="item-info"><span class="item-name">Pão c/ Ovo e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,50</span></span></div>
+    <div class="item"><span class="item-code">1677</span><div class="item-info"><span class="item-name">Pão c/ Ovo e Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">14,90</span></span></div>
+    <div class="item"><span class="item-code">1679</span><div class="item-info"><span class="item-name">Pão Cará c/ Ovo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,50</span></span></div>
+    <div class="item"><span class="item-code">1680</span><div class="item-info"><span class="item-name">Pão Cará c/ Ovo e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,50</span></span></div>
+    <div class="item"><span class="item-code">1681</span><div class="item-info"><span class="item-name">Pão c/ Ovo e Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">14,90</span></span></div>
+    <div class="item"><span class="item-code">1684</span><div class="item-info"><span class="item-name">Pão de Milho c/ Ovo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,50</span></span></div>
+    <div class="item"><span class="item-code">1685</span><div class="item-info"><span class="item-name">Pão de Milho c/ Ovo e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,50</span></span></div>
+    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Pão de Milho c/ Ovo e Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">1693</span><div class="item-info"><span class="item-name">Pão Carteira c/ Ovo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,50</span></span></div>
+    <div class="item"><span class="item-code">1694</span><div class="item-info"><span class="item-name">Pão Carteira c/ Ovo e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,50</span></span></div>
+    <div class="item"><span class="item-code">1695</span><div class="item-info"><span class="item-name">Pão Carteira c/ Ovo e Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">14,90</span></span></div>
+    <div class="item highlight"><span class="item-code">1714</span><div class="item-info"><span class="item-name">Pão, Ovo e Mortadela</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">1705</span><div class="item-info"><span class="item-name">Calabresa c/ Pão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">16,90</span></span></div>
+    <div class="item"><span class="item-code">1706</span><div class="item-info"><span class="item-name">Calabresa no Pão c/ Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
+    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Calabresa no Pão c/ Cebola</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Acréscimo Hamburguer</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item highlight"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Acréscimo Bacon</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── PÃES FRIOS ── -->
   <section id="paes-frios" class="cat-section">
@@ -1112,44 +1243,57 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">675</span><div class="item-info"><span class="item-name">Pão c/ Manteiga</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">677</span><div class="item-info"><span class="item-name">Pão c/ Margarina</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">699</span><div class="item-info"><span class="item-name">Pão c/ Requeijão</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">679</span><div class="item-info"><span class="item-name">Pão Canoa c/ Manteiga</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">681</span><div class="item-info"><span class="item-name">Pão Canoa c/ Margarina</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">683</span><div class="item-info"><span class="item-name">Pão Cará c/ Manteiga</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">685</span><div class="item-info"><span class="item-name">Pão Cará c/ Margarina</span></div><span class="item-price">R$ 3,00</span></div>
-    <div class="item"><span class="item-code">702</span><div class="item-info"><span class="item-name">Pão Cará c/ Requeijão</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">687</span><div class="item-info"><span class="item-name">Pão de Milho c/ Manteiga</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">689</span><div class="item-info"><span class="item-name">Pão de Milho c/ Margarina</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">1682</span><div class="item-info"><span class="item-name">Pão de Milho c/ Requeijão</span></div><span class="item-price">R$ 6,90</span></div>
-    <div class="item"><span class="item-code">695</span><div class="item-info"><span class="item-name">Pão Integral c/ Manteiga</span></div><span class="item-price">R$ 6,00</span></div>
-    <div class="item"><span class="item-code">697</span><div class="item-info"><span class="item-name">Pão Integral c/ Margarina</span></div><span class="item-price">R$ 6,00</span></div>
-    <div class="item"><span class="item-code">703</span><div class="item-info"><span class="item-name">Pão Integral c/ Requeijão</span></div><span class="item-price">R$ 7,50</span></div>
-    <div class="item"><span class="item-code">705</span><div class="item-info"><span class="item-name">Pão c/ Mortadela</span></div><span class="item-price">R$ 9,00</span></div>
-    <div class="item"><span class="item-code">707</span><div class="item-info"><span class="item-name">Pão c/ Mortadela Ceratti</span></div><span class="item-price">R$ 12,50</span></div>
-    <div class="item"><span class="item-code">709</span><div class="item-info"><span class="item-name">Pão c/ Mortadela e Queijo</span></div><span class="item-price">R$ 12,00</span></div>
-    <div class="item"><span class="item-code">711</span><div class="item-info"><span class="item-name">Pão c/ Salame</span></div><span class="item-price">R$ 14,00</span></div>
-    <div class="item"><span class="item-code">713</span><div class="item-info"><span class="item-name">Pão c/ Salame e Queijo</span></div><span class="item-price">R$ 15,00</span></div>
-    <div class="item"><span class="item-code">733</span><div class="item-info"><span class="item-name">Pão c/ Poleguinho</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">1668</span><div class="item-info"><span class="item-name">Pão c/ Queijo Prato</span></div><span class="item-price">R$ 10,90</span></div>
-    <div class="item"><span class="item-code">1670</span><div class="item-info"><span class="item-name">Pão c/ Mussarela</span></div><span class="item-price">R$ 10,90</span></div>
-    <div class="item"><span class="item-code">1672</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco</span></div><span class="item-price">R$ 11,90</span></div>
-    <div class="item"><span class="item-code">1674</span><div class="item-info"><span class="item-name">Pão c/ Ceratti e Queijo</span></div><span class="item-price">R$ 14,90</span></div>
-    <div class="item"><span class="item-code">1687</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Manteiga</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">1689</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Margarina</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item"><span class="item-code">1691</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Requeijão</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item highlight"><span class="item-code">1688</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Manteiga</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item highlight"><span class="item-code">1690</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Margarina</span></div><span class="item-price">R$ 5,00</span></div>
-    <div class="item highlight"><span class="item-code">1692</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Requeijão</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Requeijão</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Queijo</span></div><span class="item-price">R$ 7,00</span></div>
-    <div class="item"><span class="item-code">1722</span><div class="item-info"><span class="item-name">Pão c/ Peito de Peru e Queijo</span></div><span class="item-price">R$ 16,90</span></div>
-    <div class="item"><span class="item-code">1725</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco e Salada</span></div><span class="item-price">R$ 16,90</span></div>
-    <div class="item"><span class="item-code">1726</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco e Salame</span></div><span class="item-price">R$ 17,90</span></div>
+    <div class="item"><span class="item-code">675</span><div class="item-info"><span class="item-name">Pão c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">677</span><div class="item-info"><span class="item-name">Pão c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">699</span><div class="item-info"><span class="item-name">Pão c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">679</span><div class="item-info"><span class="item-name">Pão Canoa c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">681</span><div class="item-info"><span class="item-name">Pão Canoa c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">683</span><div class="item-info"><span class="item-name">Pão Cará c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">685</span><div class="item-info"><span class="item-name">Pão Cará c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">3,00</span></span></div>
+    <div class="item"><span class="item-code">702</span><div class="item-info"><span class="item-name">Pão Cará c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">687</span><div class="item-info"><span class="item-name">Pão de Milho c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">689</span><div class="item-info"><span class="item-name">Pão de Milho c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">1682</span><div class="item-info"><span class="item-name">Pão de Milho c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">6,90</span></span></div>
+    <div class="item"><span class="item-code">695</span><div class="item-info"><span class="item-name">Pão Integral c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">6,00</span></span></div>
+    <div class="item"><span class="item-code">697</span><div class="item-info"><span class="item-name">Pão Integral c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">6,00</span></span></div>
+    <div class="item"><span class="item-code">703</span><div class="item-info"><span class="item-name">Pão Integral c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,50</span></span></div>
+    <div class="item"><span class="item-code">705</span><div class="item-info"><span class="item-name">Pão c/ Mortadela</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">9,00</span></span></div>
+    <div class="item"><span class="item-code">707</span><div class="item-info"><span class="item-name">Pão c/ Mortadela Ceratti</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,50</span></span></div>
+    <div class="item"><span class="item-code">709</span><div class="item-info"><span class="item-name">Pão c/ Mortadela e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">12,00</span></span></div>
+    <div class="item"><span class="item-code">711</span><div class="item-info"><span class="item-name">Pão c/ Salame</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">14,00</span></span></div>
+    <div class="item"><span class="item-code">713</span><div class="item-info"><span class="item-name">Pão c/ Salame e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">15,00</span></span></div>
+    <div class="item"><span class="item-code">733</span><div class="item-info"><span class="item-name">Pão c/ Poleguinho</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">1668</span><div class="item-info"><span class="item-name">Pão c/ Queijo Prato</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">10,90</span></span></div>
+    <div class="item"><span class="item-code">1670</span><div class="item-info"><span class="item-name">Pão c/ Mussarela</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">10,90</span></span></div>
+    <div class="item"><span class="item-code">1672</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">11,90</span></span></div>
+    <div class="item"><span class="item-code">1674</span><div class="item-info"><span class="item-name">Pão c/ Ceratti e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">14,90</span></span></div>
+    <div class="item"><span class="item-code">1687</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">1689</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item"><span class="item-code">1691</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item highlight"><span class="item-code">1688</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item highlight"><span class="item-code">1690</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Margarina</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,00</span></span></div>
+    <div class="item highlight"><span class="item-code">1692</span><div class="item-info"><span class="item-name">Pão de Carteira c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Requeijão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">1731</span><div class="item-info"><span class="item-name">Pão de Queijo c/ Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">7,00</span></span></div>
+    <div class="item"><span class="item-code">1722</span><div class="item-info"><span class="item-name">Pão c/ Peito de Peru e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">16,90</span></span></div>
+    <div class="item"><span class="item-code">1725</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco e Salada</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">16,90</span></span></div>
+    <div class="item"><span class="item-code">1726</span><div class="item-info"><span class="item-name">Pão c/ Queijo Branco e Salame</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">17,90</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── LANCHES ── -->
   <section id="lanches" class="cat-section">
@@ -1178,7 +1322,20 @@
     <div class="item"><span class="item-code">1715</span><div class="item-info"><span class="item-name">Misto c/ Cheddar</span></div><div class="item-qf"><div class="qf-row"><span class="qf-label">Q</span><span class="qf-price">R$ 18,00</span></div></div></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── HAMBÚRGUERES ── -->
   <section id="hamburgueres" class="cat-section">
@@ -1189,16 +1346,29 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">744</span><div class="item-info"><span class="item-name">Burguer</span><p class="item-desc">Pão, hambúrguer, presunto e queijo</p></div><span class="item-price">R$ 22,00</span></div>
-    <div class="item"><span class="item-code">745</span><div class="item-info"><span class="item-name">X Salada</span><p class="item-desc">Pão, hambúrguer, queijo, presunto e salada</p></div><span class="item-price">R$ 24,90</span></div>
-    <div class="item"><span class="item-code">746</span><div class="item-info"><span class="item-name">X Frango</span><p class="item-desc">Pão, filé de frango, presunto e salada</p></div><span class="item-price">R$ 27,90</span></div>
-    <div class="item"><span class="item-code">747</span><div class="item-info"><span class="item-name">X Egg</span><p class="item-desc">Pão, hambúrguer, ovo, presunto e queijo</p></div><span class="item-price">R$ 27,90</span></div>
-    <div class="item"><span class="item-code">748</span><div class="item-info"><span class="item-name">X Bacon</span><p class="item-desc">Pão, hambúrguer, bacon, presunto e queijo</p></div><span class="item-price">R$ 28,90</span></div>
-    <div class="item"><span class="item-code">749</span><div class="item-info"><span class="item-name">X Calabresa</span><p class="item-desc">Pão, hambúrguer, calabresa, presunto e queijo</p></div><span class="item-price">R$ 28,90</span></div>
-    <div class="item"><span class="item-code">750</span><div class="item-info"><span class="item-name">X Tudo</span><p class="item-desc">Pão, hambúrguer, frango, calabresa, bacon, ovo, presunto, queijo e salada</p></div><span class="item-price">R$ 39,90</span></div>
+    <div class="item"><span class="item-code">744</span><div class="item-info"><span class="item-name">Burguer</span><p class="item-desc">Pão, hambúrguer, presunto e queijo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
+    <div class="item"><span class="item-code">745</span><div class="item-info"><span class="item-name">X Salada</span><p class="item-desc">Pão, hambúrguer, queijo, presunto e salada</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">24,90</span></span></div>
+    <div class="item"><span class="item-code">746</span><div class="item-info"><span class="item-name">X Frango</span><p class="item-desc">Pão, filé de frango, presunto e salada</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">27,90</span></span></div>
+    <div class="item"><span class="item-code">747</span><div class="item-info"><span class="item-name">X Egg</span><p class="item-desc">Pão, hambúrguer, ovo, presunto e queijo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">27,90</span></span></div>
+    <div class="item"><span class="item-code">748</span><div class="item-info"><span class="item-name">X Bacon</span><p class="item-desc">Pão, hambúrguer, bacon, presunto e queijo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,90</span></span></div>
+    <div class="item"><span class="item-code">749</span><div class="item-info"><span class="item-name">X Calabresa</span><p class="item-desc">Pão, hambúrguer, calabresa, presunto e queijo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">28,90</span></span></div>
+    <div class="item"><span class="item-code">750</span><div class="item-info"><span class="item-name">X Tudo</span><p class="item-desc">Pão, hambúrguer, frango, calabresa, bacon, ovo, presunto, queijo e salada</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">39,90</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── OMELETES ── -->
   <section id="omeletes" class="cat-section">
@@ -1209,23 +1379,36 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">716</span><div class="item-info"><span class="item-name">Ovo Frito</span><p class="item-desc">1 ovo</p></div><span class="item-price">R$ 4,50</span></div>
-    <div class="item"><span class="item-code">717</span><div class="item-info"><span class="item-name">Completo</span><p class="item-desc">Cebola, tomate, calabresa e queijo</p></div><span class="item-price">R$ 23,00</span></div>
-    <div class="item"><span class="item-code">718</span><div class="item-info"><span class="item-name">Atum</span><p class="item-desc">Cebola, tomate e queijo</p></div><span class="item-price">R$ 22,00</span></div>
-    <div class="item"><span class="item-code">725</span><div class="item-info"><span class="item-name">Bacon c/ Queijo Branco</span></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">1730</span><div class="item-info"><span class="item-name">Simples</span><p class="item-desc">Cebola, tomate, queijo</p></div><span class="item-price">R$ 19,00</span></div>
-    <div class="item"><span class="item-code">1732</span><div class="item-info"><span class="item-name">Pizza</span><p class="item-desc">Queijo, tomate, orégano</p></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">1733</span><div class="item-info"><span class="item-name">Queijo</span><p class="item-desc">Queijo mussarela</p></div><span class="item-price">R$ 18,90</span></div>
-    <div class="item"><span class="item-code">1734</span><div class="item-info"><span class="item-name">Vegetariano</span><p class="item-desc">Tomate e cebola</p></div><span class="item-price">R$ 17,90</span></div>
-    <div class="item"><span class="item-code">1735</span><div class="item-info"><span class="item-name">Presunto e Queijo</span></div><span class="item-price">R$ 19,90</span></div>
-    <div class="item"><span class="item-code">1736</span><div class="item-info"><span class="item-name">Queijo Branco</span></div><span class="item-price">R$ 18,90</span></div>
-    <div class="item"><span class="item-code">1737</span><div class="item-info"><span class="item-name">Ovos Mexidos</span><p class="item-desc">3 ovos</p></div><span class="item-price">R$ 14,90</span></div>
-    <div class="item"><span class="item-code">1728</span><div class="item-info"><span class="item-name">Queijo c/ Ovos</span><p class="item-desc">3 ovos</p></div><span class="item-price">R$ 18,90</span></div>
-    <div class="item"><span class="item-code">1739</span><div class="item-info"><span class="item-name">Ovos Mexidos c/ Calabresa</span><p class="item-desc">3 ovos</p></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">1740</span><div class="item-info"><span class="item-name">Ovos Mexidos c/ Bacon</span><p class="item-desc">3 ovos</p></div><span class="item-price">R$ 20,00</span></div>
+    <div class="item"><span class="item-code">716</span><div class="item-info"><span class="item-name">Ovo Frito</span><p class="item-desc">1 ovo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">4,50</span></span></div>
+    <div class="item"><span class="item-code">717</span><div class="item-info"><span class="item-name">Completo</span><p class="item-desc">Cebola, tomate, calabresa e queijo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">23,00</span></span></div>
+    <div class="item"><span class="item-code">718</span><div class="item-info"><span class="item-name">Atum</span><p class="item-desc">Cebola, tomate e queijo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
+    <div class="item"><span class="item-code">725</span><div class="item-info"><span class="item-name">Bacon c/ Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">1730</span><div class="item-info"><span class="item-name">Simples</span><p class="item-desc">Cebola, tomate, queijo</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">19,00</span></span></div>
+    <div class="item"><span class="item-code">1732</span><div class="item-info"><span class="item-name">Pizza</span><p class="item-desc">Queijo, tomate, orégano</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">1733</span><div class="item-info"><span class="item-name">Queijo</span><p class="item-desc">Queijo mussarela</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
+    <div class="item"><span class="item-code">1734</span><div class="item-info"><span class="item-name">Vegetariano</span><p class="item-desc">Tomate e cebola</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">17,90</span></span></div>
+    <div class="item"><span class="item-code">1735</span><div class="item-info"><span class="item-name">Presunto e Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">19,90</span></span></div>
+    <div class="item"><span class="item-code">1736</span><div class="item-info"><span class="item-name">Queijo Branco</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
+    <div class="item"><span class="item-code">1737</span><div class="item-info"><span class="item-name">Ovos Mexidos</span><p class="item-desc">3 ovos</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">14,90</span></span></div>
+    <div class="item"><span class="item-code">1728</span><div class="item-info"><span class="item-name">Queijo c/ Ovos</span><p class="item-desc">3 ovos</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
+    <div class="item"><span class="item-code">1739</span><div class="item-info"><span class="item-name">Ovos Mexidos c/ Calabresa</span><p class="item-desc">3 ovos</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">1740</span><div class="item-info"><span class="item-name">Ovos Mexidos c/ Bacon</span><p class="item-desc">3 ovos</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── SALGADOS ── -->
   <section id="salgados" class="cat-section">
@@ -1236,23 +1419,36 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">27</span><div class="item-info"><span class="item-name">Bauru</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">752</span><div class="item-info"><span class="item-name">Catarina de Calabresa</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">1744</span><div class="item-info"><span class="item-name">Catarina de Frango</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">1743</span><div class="item-info"><span class="item-name">Esfira de Carne</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">1744</span><div class="item-info"><span class="item-name">Esfira de Frango</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">755</span><div class="item-info"><span class="item-name">Hamburgão</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">756</span><div class="item-info"><span class="item-name">Hamburgão c/ Cheddar</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">757</span><div class="item-info"><span class="item-name">Hamburgão c/ Catupiry</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">758</span><div class="item-info"><span class="item-name">Enroladão de Salsicha</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">25</span><div class="item-info"><span class="item-name">Croissant de Carne</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">1745</span><div class="item-info"><span class="item-name">Croissant de Queijo</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">1746</span><div class="item-info"><span class="item-name">Croissant de Queijo e Presunto</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">1747</span><div class="item-info"><span class="item-name">Croissant de Frango c/ Catupiry</span></div><span class="item-price">R$ 8,90</span></div>
-    <div class="item"><span class="item-code">1748</span><div class="item-info"><span class="item-name">Croissant Calabresa</span></div><span class="item-price">R$ 8,90</span></div>
+    <div class="item"><span class="item-code">27</span><div class="item-info"><span class="item-name">Bauru</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">752</span><div class="item-info"><span class="item-name">Catarina de Calabresa</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">1744</span><div class="item-info"><span class="item-name">Catarina de Frango</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">1743</span><div class="item-info"><span class="item-name">Esfira de Carne</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">1744</span><div class="item-info"><span class="item-name">Esfira de Frango</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">755</span><div class="item-info"><span class="item-name">Hamburgão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">756</span><div class="item-info"><span class="item-name">Hamburgão c/ Cheddar</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">757</span><div class="item-info"><span class="item-name">Hamburgão c/ Catupiry</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">758</span><div class="item-info"><span class="item-name">Enroladão de Salsicha</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">25</span><div class="item-info"><span class="item-name">Croissant de Carne</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">1745</span><div class="item-info"><span class="item-name">Croissant de Queijo</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">1746</span><div class="item-info"><span class="item-name">Croissant de Queijo e Presunto</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">1747</span><div class="item-info"><span class="item-name">Croissant de Frango c/ Catupiry</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+    <div class="item"><span class="item-code">1748</span><div class="item-info"><span class="item-name">Croissant Calabresa</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── SUCOS ── -->
   <section id="sucos" class="cat-section">
@@ -1263,30 +1459,43 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">09</span><div class="item-info"><span class="item-name">Laranja</span></div><span class="item-price">R$ 15,90</span></div>
-    <div class="item"><span class="item-code">–</span><div class="item-info"><span class="item-name">Laranja e Açaí</span></div><span class="item-price">R$ 22,90</span></div>
-    <div class="item"><span class="item-code">01</span><div class="item-info"><span class="item-name">Laranja e Morango</span></div><span class="item-price">R$ 22,90</span></div>
-    <div class="item"><span class="item-code">02</span><div class="item-info"><span class="item-name">Laranja e Limão</span></div><span class="item-price">R$ 18,90</span></div>
-    <div class="item"><span class="item-code">03</span><div class="item-info"><span class="item-name">Abacaxi</span></div><span class="item-price">R$ 16,90</span></div>
-    <div class="item"><span class="item-code">–</span><div class="item-info"><span class="item-name">Abacaxi c/ Hortelã</span></div><span class="item-price">R$ 17,90</span></div>
-    <div class="item"><span class="item-code">05</span><div class="item-info"><span class="item-name">Maracujá</span></div><span class="item-price">R$ 17,90</span></div>
-    <div class="item"><span class="item-code">06</span><div class="item-info"><span class="item-name">Limão</span></div><span class="item-price">R$ 17,90</span></div>
-    <div class="item"><span class="item-code">07</span><div class="item-info"><span class="item-name">Morango</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">08</span><div class="item-info"><span class="item-name">Goiaba</span></div><span class="item-price">R$ 18,90</span></div>
-    <div class="item"><span class="item-code">10</span><div class="item-info"><span class="item-name">Manga</span></div><span class="item-price">R$ 18,90</span></div>
-    <div class="item"><span class="item-code">11</span><div class="item-info"><span class="item-name">Açaí</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">753</span><div class="item-info"><span class="item-name">Laranja c/ Abacaxi</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">754</span><div class="item-info"><span class="item-name">Laranja c/ Cenoura</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">755</span><div class="item-info"><span class="item-name">Laranja c/ Mamão</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">756</span><div class="item-info"><span class="item-name">Maracujá c/ Laranja</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">757</span><div class="item-info"><span class="item-name">Maracujá e Morango</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">758</span><div class="item-info"><span class="item-name">Limão c/ Hortelã</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">759</span><div class="item-info"><span class="item-name">Manga c/ Laranja</span></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">760</span><div class="item-info"><span class="item-name">Açaí c/ Banana e água</span></div><span class="item-price">R$ 22,90</span></div>
-    <div class="item"><span class="item-code">763</span><div class="item-info"><span class="item-name">Maçã</span></div><span class="item-price">R$ 18,90</span></div>
+    <div class="item"><span class="item-code">09</span><div class="item-info"><span class="item-name">Laranja</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">15,90</span></span></div>
+    <div class="item"><span class="item-code">–</span><div class="item-info"><span class="item-name">Laranja e Açaí</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,90</span></span></div>
+    <div class="item"><span class="item-code">01</span><div class="item-info"><span class="item-name">Laranja e Morango</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,90</span></span></div>
+    <div class="item"><span class="item-code">02</span><div class="item-info"><span class="item-name">Laranja e Limão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
+    <div class="item"><span class="item-code">03</span><div class="item-info"><span class="item-name">Abacaxi</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">16,90</span></span></div>
+    <div class="item"><span class="item-code">–</span><div class="item-info"><span class="item-name">Abacaxi c/ Hortelã</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">17,90</span></span></div>
+    <div class="item"><span class="item-code">05</span><div class="item-info"><span class="item-name">Maracujá</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">17,90</span></span></div>
+    <div class="item"><span class="item-code">06</span><div class="item-info"><span class="item-name">Limão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">17,90</span></span></div>
+    <div class="item"><span class="item-code">07</span><div class="item-info"><span class="item-name">Morango</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">08</span><div class="item-info"><span class="item-name">Goiaba</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
+    <div class="item"><span class="item-code">10</span><div class="item-info"><span class="item-name">Manga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
+    <div class="item"><span class="item-code">11</span><div class="item-info"><span class="item-name">Açaí</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">753</span><div class="item-info"><span class="item-name">Laranja c/ Abacaxi</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">754</span><div class="item-info"><span class="item-name">Laranja c/ Cenoura</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">755</span><div class="item-info"><span class="item-name">Laranja c/ Mamão</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">756</span><div class="item-info"><span class="item-name">Maracujá c/ Laranja</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">757</span><div class="item-info"><span class="item-name">Maracujá e Morango</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">758</span><div class="item-info"><span class="item-name">Limão c/ Hortelã</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">759</span><div class="item-info"><span class="item-name">Manga c/ Laranja</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">760</span><div class="item-info"><span class="item-name">Açaí c/ Banana e água</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,90</span></span></div>
+    <div class="item"><span class="item-code">763</span><div class="item-info"><span class="item-name">Maçã</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">18,90</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── SUCOS DETOX ── -->
   <section id="detox" class="cat-section">
@@ -1297,16 +1506,29 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">812</span><div class="item-info"><span class="item-name">Segunda</span><p class="item-desc">Gengibre, chá verde e limão</p></div><span class="item-price">R$ 22,90</span></div>
-    <div class="item"><span class="item-code">813</span><div class="item-info"><span class="item-name">Terça</span><p class="item-desc">Maracujá, gengibre e limão</p></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">814</span><div class="item-info"><span class="item-name">Quarta</span><p class="item-desc">Ameixa, mamão, laranja e limão</p></div><span class="item-price">R$ 22,90</span></div>
-    <div class="item"><span class="item-code">815</span><div class="item-info"><span class="item-name">Quinta</span><p class="item-desc">Couve, hortelã e limão</p></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">816</span><div class="item-info"><span class="item-name">Sexta</span><p class="item-desc">Cenoura, couve, maçã e limão</p></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">817</span><div class="item-info"><span class="item-name">Sábado</span><p class="item-desc">Pepino, beterraba, maçã e cenoura</p></div><span class="item-price">R$ 20,90</span></div>
-    <div class="item"><span class="item-code">818</span><div class="item-info"><span class="item-name">Domingo</span><p class="item-desc">Maçã, pera, laranja e hortelã</p></div><span class="item-price">R$ 22,90</span></div>
+    <div class="item"><span class="item-code">812</span><div class="item-info"><span class="item-name">Segunda</span><p class="item-desc">Gengibre, chá verde e limão</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,90</span></span></div>
+    <div class="item"><span class="item-code">813</span><div class="item-info"><span class="item-name">Terça</span><p class="item-desc">Maracujá, gengibre e limão</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">814</span><div class="item-info"><span class="item-name">Quarta</span><p class="item-desc">Ameixa, mamão, laranja e limão</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,90</span></span></div>
+    <div class="item"><span class="item-code">815</span><div class="item-info"><span class="item-name">Quinta</span><p class="item-desc">Couve, hortelã e limão</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">816</span><div class="item-info"><span class="item-name">Sexta</span><p class="item-desc">Cenoura, couve, maçã e limão</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">817</span><div class="item-info"><span class="item-name">Sábado</span><p class="item-desc">Pepino, beterraba, maçã e cenoura</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,90</span></span></div>
+    <div class="item"><span class="item-code">818</span><div class="item-info"><span class="item-name">Domingo</span><p class="item-desc">Maçã, pera, laranja e hortelã</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,90</span></span></div>
   </section>
 
-  <div class="section-sep"></div>
+  <div class="section-sep">
+    <svg viewBox="0 0 500 24" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="12" x2="195" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+      <path d="M200 12 Q205 6 210 12 Q215 18 220 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <circle cx="230" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M240 8 L245 12 L240 16 L235 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="250" cy="12" r="3.5" fill="none" stroke="#C8941F" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="250" cy="12" r="1.5" fill="#C8941F" opacity="0.8"/>
+      <path d="M260 8 L265 12 L260 16 L255 12 Z" fill="#C8941F" opacity="0.5"/>
+      <circle cx="270" cy="12" r="2.5" fill="#C8941F" opacity="0.6"/>
+      <path d="M280 12 Q285 18 290 12 Q295 6 300 12" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <line x1="305" y1="12" x2="500" y2="12" stroke="#C8941F" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
 
   <!-- ── VITAMINAS ── -->
   <section id="vitaminas" class="cat-section">
@@ -1317,20 +1539,20 @@
       <div class="cat-title-dot"></div>
     </div>
 
-    <div class="item"><span class="item-code">792</span><div class="item-info"><span class="item-name">Banana c/ Leite</span></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">793</span><div class="item-info"><span class="item-name">Abacate c/ Leite</span></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">794</span><div class="item-info"><span class="item-name">Morango c/ Leite</span></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">795</span><div class="item-info"><span class="item-name">Mamão c/ Leite</span></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">797</span><div class="item-info"><span class="item-name">Iogurte c/ Leite</span></div><span class="item-price">R$ 16,00</span></div>
-    <div class="item"><span class="item-code">798</span><div class="item-info"><span class="item-name">Iogurte c/ 1 Fruta</span></div><span class="item-price">R$ 22,00</span></div>
-    <div class="item"><span class="item-code">790</span><div class="item-info"><span class="item-name">Mamão, Banana, Maçã c/ Leite</span></div><span class="item-price">R$ 21,00</span></div>
-    <div class="item"><span class="item-code">791</span><div class="item-info"><span class="item-name">Mamão, Banana, Maçã c/ Suco de Laranja</span></div><span class="item-price">R$ 22,00</span></div>
-    <div class="item"><span class="item-code">1650</span><div class="item-info"><span class="item-name">Manga c/ Leite</span></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">1651</span><div class="item-info"><span class="item-name">Maracujá c/ Leite</span></div><span class="item-price">R$ 20,00</span></div>
-    <div class="item"><span class="item-code">1654</span><div class="item-info"><span class="item-name">Mamão, Abacaxi, Banana e Leite</span></div><span class="item-price">R$ 22,00</span></div>
-    <div class="item"><span class="item-code">1657</span><div class="item-info"><span class="item-name">Mamão, Cenoura, Beterraba e Laranja</span></div><span class="item-price">R$ 22,00</span></div>
-    <div class="item"><span class="item-code">1658</span><div class="item-info"><span class="item-name">Mamão, Morango, Banana, Maçã e Laranja</span></div><span class="item-price">R$ 22,00</span></div>
-    <div class="item"><span class="item-code">1761</span><div class="item-info"><span class="item-name">Açaí, Banana e Leite</span></div><span class="item-price">R$ 22,00</span></div>
+    <div class="item"><span class="item-code">792</span><div class="item-info"><span class="item-name">Banana c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">793</span><div class="item-info"><span class="item-name">Abacate c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">794</span><div class="item-info"><span class="item-name">Morango c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">795</span><div class="item-info"><span class="item-name">Mamão c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">797</span><div class="item-info"><span class="item-name">Iogurte c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">16,00</span></span></div>
+    <div class="item"><span class="item-code">798</span><div class="item-info"><span class="item-name">Iogurte c/ 1 Fruta</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
+    <div class="item"><span class="item-code">790</span><div class="item-info"><span class="item-name">Mamão, Banana, Maçã c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">21,00</span></span></div>
+    <div class="item"><span class="item-code">791</span><div class="item-info"><span class="item-name">Mamão, Banana, Maçã c/ Suco de Laranja</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
+    <div class="item"><span class="item-code">1650</span><div class="item-info"><span class="item-name">Manga c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">1651</span><div class="item-info"><span class="item-name">Maracujá c/ Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">20,00</span></span></div>
+    <div class="item"><span class="item-code">1654</span><div class="item-info"><span class="item-name">Mamão, Abacaxi, Banana e Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
+    <div class="item"><span class="item-code">1657</span><div class="item-info"><span class="item-name">Mamão, Cenoura, Beterraba e Laranja</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
+    <div class="item"><span class="item-code">1658</span><div class="item-info"><span class="item-name">Mamão, Morango, Banana, Maçã e Laranja</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
+    <div class="item"><span class="item-code">1761</span><div class="item-info"><span class="item-name">Açaí, Banana e Leite</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">22,00</span></span></div>
   </section>
 
 </div>
@@ -1493,6 +1715,17 @@
   window.addEventListener('scroll', () => {
     backTop.classList.toggle('show', window.scrollY > 400);
   });
+
+  // ── Fade-in sections on scroll
+  const fadeObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.cat-section').forEach(s => fadeObserver.observe(s));
 </script>
 </body>
 </html>
