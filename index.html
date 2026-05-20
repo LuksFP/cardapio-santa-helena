@@ -27,7 +27,6 @@
       background-color: var(--cream);
       color: var(--dark);
       min-height: 100vh;
-      display: flex;
     }
 
     /* ── TEXTURE OVERLAY ── */
@@ -618,6 +617,9 @@
 </head>
 <body>
 
+<!-- ═══════════════════════════ MAIN ════════════════════════════ -->
+<div id="main">
+
 <!-- ════════════════════════════════ HERO ════════════════════════════════ -->
 <section id="hero">
   <!-- Ornate corners (SVG) -->
@@ -727,7 +729,6 @@
 </button>
 
 <!-- ════════════════════════════════ CONTENT ════════════════════════════ -->
-<div id="main">
 <div class="section-wrap">
 
   <!-- Food illustration header (appears on all content pages) -->
@@ -1142,8 +1143,6 @@
 
 </div>
 
-</div><!-- /#main -->
-
 <!-- ════════════════════════════════ FOOTER ════════════════════════════ -->
 <footer id="footer">
   <!-- Ornate corners -->
@@ -1186,6 +1185,8 @@
 
   <p style="margin-top:2.5rem; font-size:0.65rem; opacity:0.4; letter-spacing:0.1em;">© 2025 SANTA HELENA PANIFICADORA</p>
 </footer>
+
+</div><!-- /#main -->
 
 <!-- ── Back to top ── -->
 <button id="back-top" title="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
