@@ -58,7 +58,13 @@
       scrollbar-width: thin;
       scrollbar-color: #333 transparent;
       z-index: 300;
+      transform: translateX(-100%);
       transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    @media (min-width: 769px) {
+      body.sidebar-visible #sidebar {
+        transform: translateX(0);
+      }
     }
     #sidebar::-webkit-scrollbar { width: 4px; }
     #sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
@@ -195,7 +201,7 @@
 
     /* ── MAIN CONTENT ── */
     #main {
-      margin-left: 240px;
+      margin-left: 0;
       flex: 1;
       min-width: 0;
     }
@@ -219,11 +225,12 @@
       align-items: center;
       justify-content: center;
       background:
-        radial-gradient(ellipse at 60% 40%, rgba(200,148,31,0.18) 0%, transparent 65%),
-        radial-gradient(ellipse at 20% 80%, rgba(107,79,42,0.12) 0%, transparent 55%),
-        linear-gradient(160deg, #fdf6e8 0%, #f4efe5 45%, #e8d9be 100%);
+        linear-gradient(180deg, rgba(18,15,11,0.22) 0%, rgba(18,15,11,0.52) 100%),
+        radial-gradient(ellipse at center, rgba(20,16,10,0.12) 0%, rgba(20,16,10,0.62) 76%),
+        url("assets/hero-bakery-1600.jpg") center center / cover no-repeat;
       overflow: hidden;
       z-index: 1;
+      isolation: isolate;
     }
 
     /* grain texture no hero */
@@ -239,17 +246,74 @@
     .hero-corner {
       position: absolute;
       width: 180px;
-      opacity: 0.7;
+      opacity: 0;
       z-index: 1;
+      display: none;
     }
     .hero-corner.tl { top: 0; left: 0; }
     .hero-corner.br { bottom: 0; right: 0; transform: rotate(180deg); }
+
+    .hero-steam {
+      position: absolute;
+      top: 12vh;
+      left: 57%;
+      width: 130px;
+      height: 170px;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 1;
+      transform: translateX(-50%);
+      mix-blend-mode: screen;
+    }
+    .hero-steam span {
+      position: absolute;
+      bottom: 0;
+      width: 28px;
+      height: 130px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to top,
+        rgba(255,255,255,0) 0%,
+        rgba(255,248,234,0.22) 18%,
+        rgba(255,248,234,0.76) 52%,
+        rgba(255,255,255,0) 100%
+      );
+      filter: blur(10px);
+      opacity: 0;
+      transform: translateY(26px) scaleX(0.68);
+      animation: steamRise 5.8s ease-in-out infinite;
+    }
+    .hero-steam span:nth-child(1) { left: 22px; animation-delay: 0s; }
+    .hero-steam span:nth-child(2) { left: 56px; height: 138px; animation-delay: 1.35s; }
+    .hero-steam span:nth-child(3) { left: 86px; height: 108px; animation-delay: 2.65s; }
+    @keyframes steamRise {
+      0% { opacity: 0; transform: translate3d(0, 34px, 0) scaleX(0.62) rotate(0deg); }
+      18% { opacity: 0.78; }
+      52% { opacity: 0.56; transform: translate3d(-8px, -42px, 0) scaleX(1.18) rotate(7deg); }
+      100% { opacity: 0; transform: translate3d(12px, -118px, 0) scaleX(1.36) rotate(-9deg); }
+    }
+    @media (max-width: 900px) {
+      .hero-steam {
+        top: 15vh;
+        left: 62%;
+        transform: translateX(-50%) scale(0.82);
+      }
+    }
+    @media (max-width: 540px) {
+      .hero-steam {
+        top: 16vh;
+        left: 64%;
+        transform: translateX(-50%) scale(0.64);
+        opacity: 0.55;
+      }
+    }
 
     .hero-content {
       text-align: center;
       padding: 2rem;
       z-index: 2;
       animation: heroIn 1s ease both;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.45);
     }
     @keyframes heroIn {
       from { opacity: 0; transform: translateY(16px); }
@@ -264,7 +328,7 @@
       font-family: 'Dancing Script', cursive;
       font-size: clamp(3.5rem, 10vw, 6rem);
       line-height: 1;
-      color: var(--dark);
+      color: #fff8ea;
       display: block;
     }
 
@@ -276,7 +340,7 @@
       font-size: 0.85rem;
       font-weight: 700;
       letter-spacing: 0.35em;
-      color: var(--gold);
+      color: var(--gold-light);
       margin-top: 0.25rem;
     }
     .logo-sub::before, .logo-sub::after {
@@ -293,13 +357,13 @@
       font-size: 0.9rem;
       font-weight: 600;
       letter-spacing: 0.4em;
-      color: var(--dark);
+      color: #fff8ea;
     }
 
     .hero-instagram {
       margin-top: 2rem;
       font-size: 0.8rem;
-      color: var(--gray);
+      color: rgba(255,248,234,0.82);
       display: flex;
       align-items: center;
       gap: 0.4rem;
@@ -317,11 +381,13 @@
       gap: 0.4rem;
       font-size: 0.7rem;
       letter-spacing: 0.2em;
-      color: var(--gold);
+      color: var(--gold-light);
       animation: bounce 2s infinite;
       cursor: pointer;
       background: none;
       border: none;
+      text-decoration: none;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.55);
     }
     @keyframes bounce {
       0%,100% { transform: translateY(0); }
@@ -333,6 +399,11 @@
     .section-wrap {
       position: relative;
       z-index: 1;
+    }
+    @media (min-width: 769px) {
+      .section-wrap {
+        margin-left: 240px;
+      }
     }
 
     /* ── FOOD ILLUSTRATION HEADER ── */
@@ -358,13 +429,15 @@
 
     /* ── FADE-IN ON SCROLL ── */
     .cat-section {
-      padding: 2.5rem 1.5rem 1.5rem;
+      padding: 0 1.5rem 1.5rem;
       max-width: 860px;
       margin: 0 auto;
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.55s ease, transform 0.55s ease;
       border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(74,51,19,0.08);
     }
     .cat-section.visible { opacity: 1; transform: translateY(0); }
 
@@ -372,21 +445,69 @@
     .cat-section:nth-of-type(odd)  { background: var(--card-bg); }
     .cat-section:nth-of-type(even) { background: var(--cream-alt); }
 
+    #cafes { --section-photo: url("assets/sections/cafes.jpg"); --section-position: center 56%; }
+    #mais-pedidos { --section-photo: url("assets/hero-bakery-1600.jpg"); --section-position: center 48%; }
+    #bebidas { --section-photo: url("assets/sections/bebidas.jpg"); --section-position: center 54%; }
+    #chas { --section-photo: url("assets/sections/chas.jpg"); --section-position: center 52%; }
+    #tapiocas { --section-photo: url("assets/sections/tapiocas.jpg"); --section-position: center 54%; }
+    #paes-quentes { --section-photo: url("assets/sections/paes-quentes.jpg"); --section-position: center 44%; }
+    #paes-frios { --section-photo: url("assets/sections/paes-frios.jpg"); --section-position: center 54%; }
+    #lanches { --section-photo: url("assets/sections/lanches.jpg"); --section-position: center 52%; }
+    #hamburgueres { --section-photo: url("assets/sections/hamburgueres.jpg"); --section-position: center 52%; }
+    #omeletes { --section-photo: url("assets/sections/omeletes.jpg"); --section-position: center 48%; }
+    #salgados { --section-photo: url("assets/sections/salgados.jpg"); --section-position: center 48%; }
+    #sucos { --section-photo: url("assets/sections/sucos.jpg"); --section-position: center 42%; }
+    #detox { --section-photo: url("assets/sections/detox.jpg"); --section-position: center 44%; }
+    #vitaminas { --section-photo: url("assets/sections/vitaminas.jpg"); --section-position: center 42%; }
+
     .cat-title {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      margin-bottom: 1.5rem;
+      min-height: 190px;
+      margin: 0 -1.5rem 1.5rem;
+      padding: 1.5rem;
+      align-items: flex-end;
+      background:
+        linear-gradient(180deg, rgba(20,16,10,0.04) 0%, rgba(20,16,10,0.74) 100%),
+        linear-gradient(90deg, rgba(20,16,10,0.52) 0%, rgba(20,16,10,0.08) 68%),
+        var(--section-photo);
+      background-size: cover;
+      background-position: var(--section-position, center);
+      position: relative;
+      isolation: isolate;
+    }
+    .cat-title::before,
+    .cat-title::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .cat-title::before {
+      background: var(--section-photo) var(--section-position, center) / cover no-repeat;
+      z-index: -2;
+      transform: scale(1.03);
+      transform-origin: center;
+    }
+    .cat-title::after {
+      background:
+        linear-gradient(180deg, rgba(20,16,10,0.04) 0%, rgba(20,16,10,0.74) 100%),
+        linear-gradient(90deg, rgba(20,16,10,0.52) 0%, rgba(20,16,10,0.08) 68%);
+      z-index: -1;
     }
 
     .cat-title-icon {
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.3rem;
       flex-shrink: 0;
+      border-radius: 999px;
+      background: rgba(255,248,234,0.9);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
     }
 
     .cat-title-text {
@@ -394,13 +515,14 @@
       font-weight: 700;
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: var(--dark);
+      color: #fff8ea;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.42);
     }
 
     .cat-title-line {
       flex: 1;
       height: 2px;
-      background: linear-gradient(to right, var(--gold), transparent);
+      background: linear-gradient(to right, var(--gold-light), rgba(255,248,234,0.12));
       border-radius: 2px;
     }
     .cat-title-dot {
@@ -409,6 +531,144 @@
       background: var(--gold);
       border-radius: 50%;
       flex-shrink: 0;
+    }
+
+    .featured-strip {
+      max-width: 860px;
+      margin: 1.75rem auto 1.5rem;
+      padding: 0 1.5rem;
+    }
+    .featured-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.9rem;
+      color: var(--dark);
+    }
+    .featured-title span {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .featured-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--gold), transparent);
+    }
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+    .featured-card {
+      min-height: 172px;
+      position: relative;
+      overflow: hidden;
+      border: 0;
+      border-radius: 14px;
+      background:
+        linear-gradient(180deg, rgba(18,15,11,0.08) 0%, rgba(18,15,11,0.78) 100%),
+        var(--photo) center / cover no-repeat;
+      color: #fff8ea;
+      cursor: pointer;
+      text-align: left;
+      padding: 1rem;
+      display: flex;
+      align-items: flex-end;
+      box-shadow: 0 10px 26px rgba(74,51,19,0.12);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+    .featured-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 34px rgba(74,51,19,0.18);
+    }
+    .featured-card:focus-visible {
+      outline: 3px solid var(--gold-light);
+      outline-offset: 3px;
+    }
+    .featured-card strong {
+      display: block;
+      font-size: 0.88rem;
+      line-height: 1.2;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+    .featured-card > span {
+      display: block;
+    }
+    .featured-card strong + span {
+      display: inline-block;
+      margin-top: 0.35rem;
+      color: var(--gold-light);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+    }
+
+    .store-strip {
+      max-width: 860px;
+      margin: 1.5rem auto 0;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .store-strip-item {
+      min-height: 74px;
+      padding: 0.9rem 1rem;
+      border: 1px solid rgba(200,148,31,0.22);
+      background: rgba(255,253,248,0.76);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(74,51,19,0.08);
+    }
+    .store-strip-item strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: var(--gold);
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .store-strip-item span {
+      color: var(--dark);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .quick-filters {
+      max-width: 860px;
+      margin: 1.1rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 0.55rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .quick-filters::-webkit-scrollbar { display: none; }
+    .quick-filters a {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      background: var(--dark);
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 20px rgba(30,30,30,0.12);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .quick-filters a:hover {
+      background: #333;
+      transform: translateY(-2px);
     }
 
     /* ── PRICE HEADER ── */
@@ -464,12 +724,34 @@
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    .item {
+      cursor: pointer;
+    }
     .item:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 18px rgba(100,70,20,0.12);
     }
+    .item:focus-visible {
+      outline: 3px solid var(--gold-light);
+      outline-offset: 3px;
+    }
     .item:last-child { margin-bottom: 0; }
     .item.highlight { border-left: 3px solid var(--red); }
+    .item-badge {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      margin-top: 0.35rem;
+      padding: 0.18rem 0.42rem;
+      border-radius: 999px;
+      background: rgba(200,148,31,0.12);
+      color: #8a5d12;
+      border: 1px solid rgba(200,148,31,0.24);
+      font-size: 0.56rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
 
     .item-code {
       font-size: 0.62rem;
@@ -583,7 +865,7 @@
 
     /* ── SECTION SEPARATOR ORNAMENTADO ── */
     .section-sep {
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       padding: 0.5rem 2rem;
@@ -671,6 +953,39 @@
     }
     #back-top.show { opacity: 1; transform: translateY(0); }
     #back-top:hover { background: var(--gold-light); }
+
+    #back-menu {
+      position: fixed;
+      bottom: 8.7rem;
+      right: 1.5rem;
+      height: 42px;
+      padding: 0 0.9rem;
+      background: var(--dark);
+      color: var(--cream);
+      border: 1px solid rgba(200,148,31,0.28);
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 200;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 22px rgba(30,30,30,0.18);
+    }
+    #back-menu.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    #back-menu:hover { background: #333; }
+    #back-menu svg { width: 15px; height: 15px; }
 
     /* ── SCROLL OFFSET (compensa a ausência de top nav) ── */
     section[id] { scroll-margin-top: 1.5rem; }
@@ -760,12 +1075,162 @@
     }
     #whatsapp-btn svg { width: 26px; height: 26px; }
 
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: rgba(18,15,11,0.56);
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .item-modal {
+      width: min(460px, 100%);
+      border-radius: 18px;
+      background: var(--card-bg);
+      border: 1px solid rgba(200,148,31,0.24);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.26);
+      padding: 1.25rem;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.22s ease;
+    }
+    .modal-overlay.open .item-modal {
+      transform: translateY(0) scale(1);
+    }
+    .modal-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+    .modal-category {
+      margin-bottom: 0.35rem;
+      color: var(--gold);
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    #modal-title {
+      color: var(--dark);
+      font-size: 1.45rem;
+      line-height: 1.15;
+      font-weight: 700;
+    }
+    .modal-close {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(30,30,30,0.08);
+      color: var(--dark);
+      cursor: pointer;
+      font-size: 1.3rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .modal-close:hover { background: rgba(30,30,30,0.14); }
+    .modal-desc {
+      color: var(--gray);
+      font-size: 0.86rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .modal-price-row {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: var(--gold-pale);
+      color: #7a5010;
+      font-weight: 800;
+      font-size: 0.86rem;
+      margin-bottom: 1.1rem;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .modal-whatsapp,
+    .modal-secondary {
+      min-height: 42px;
+      border-radius: 999px;
+      padding: 0.7rem 1rem;
+      border: 0;
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .modal-whatsapp {
+      background: #25D366;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(37,211,102,0.24);
+    }
+    .modal-secondary {
+      background: rgba(30,30,30,0.08);
+      color: var(--dark);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .cat-section.visible .cat-title::before {
+        animation: photoSettle 0.85s ease both;
+      }
+      @keyframes photoSettle {
+        from { transform: scale(1.055); }
+        to   { transform: scale(1.03); }
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+      .hero-steam span {
+        opacity: 0.22 !important;
+        transform: translateY(-34px) scaleX(1) !important;
+      }
+    }
+
     /* ── RESPONSIVE ── */
+    @media (max-width: 820px) {
+      .featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .store-strip { grid-template-columns: 1fr; }
+    }
     @media (max-width: 540px) {
       .price-header { grid-template-columns: 1fr 80px 80px; }
       .item-prices { min-width: 70px; }
       .item-qf { min-width: 70px; }
+      .store-strip,
+      .quick-filters { padding: 0 1rem; }
+      .featured-strip { padding: 0 1rem; }
+      .featured-grid { grid-template-columns: 1fr; }
+      .featured-card { min-height: 138px; }
+      .cat-title { min-height: 150px; padding: 1.15rem; gap: 0.55rem; }
+      .cat-title-icon { width: 38px; height: 38px; font-size: 1.05rem; }
       .cat-title-text { font-size: 0.95rem; letter-spacing: 0.2em; }
+      #back-menu {
+        right: 1rem;
+        bottom: 8.4rem;
+      }
+      #back-menu span { display: none; }
     }
   </style>
 </head>
@@ -776,6 +1241,12 @@
 
 <!-- ════════════════════════════════ HERO ════════════════════════════════ -->
 <section id="hero">
+  <div class="hero-steam" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
   <!-- Ornate corners (SVG) -->
   <svg class="hero-corner tl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M10 10 Q60 10 80 50 Q100 90 150 80 Q90 120 70 160 Q50 200 10 190 Z" stroke="#C8941F" stroke-width="1.2" fill="none" opacity="0.4"/>
@@ -826,10 +1297,10 @@
     </a>
   </div>
 
-  <button class="scroll-hint" onclick="document.getElementById('nav').scrollIntoView({behavior:'smooth'})">
+  <a class="scroll-hint" href="#cardapio" aria-label="Ver cardapio">
     <span>VER CARDÁPIO</span>
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </button>
+  </a>
 </section>
 
 <!-- ════════════════════════════════ SIDEBAR ════════════════════════════ -->
@@ -855,6 +1326,7 @@
   </div>
 
   <nav class="sidebar-nav">
+    <a href="#mais-pedidos"><span class="nav-icon">⭐</span>Mais Pedidos</a>
     <a href="#cafes"><span class="nav-icon">☕</span>Cafés</a>
     <a href="#bebidas"><span class="nav-icon">🧊</span>Bebidas Geladas</a>
     <a href="#chas"><span class="nav-icon">🫖</span>Chás</a>
@@ -891,7 +1363,7 @@
 </button>
 
 <!-- ════════════════════════════════ CONTENT ════════════════════════════ -->
-<div class="section-wrap">
+<div class="section-wrap" id="cardapio">
 
   <!-- Food illustration header -->
   <div class="page-header" aria-hidden="true">
@@ -991,10 +1463,74 @@
     </svg>
   </div>
 
+  <div class="store-strip" aria-label="Informações da panificadora">
+    <div class="store-strip-item">
+      <strong>Telefone</strong>
+      <span>(13) 3304-5593 · (13) 99162-2975</span>
+    </div>
+    <div class="store-strip-item">
+      <strong>Endereço</strong>
+      <span>Rua Valéria Ciccone, 597 · Vila Santa Rosa</span>
+    </div>
+    <div class="store-strip-item">
+      <strong>Atendimento</strong>
+      <span>Confirme horário e pedidos pelo WhatsApp</span>
+    </div>
+  </div>
+
+  <nav class="quick-filters" aria-label="Filtros rápidos do cardápio">
+    <a href="#mais-pedidos">Mais pedidos</a>
+    <a href="#cafes">Café</a>
+    <a href="#paes-quentes">Pão</a>
+    <a href="#tapiocas">Tapioca</a>
+    <a href="#lanches">Lanche</a>
+    <a href="#sucos">Suco</a>
+  </nav>
+
   <div class="no-results" id="no-results">
     <strong>☕</strong>
     Nenhum item encontrado. Tente outro termo.
   </div>
+
+  <div class="featured-strip" aria-label="Destaques da casa">
+    <div class="featured-title"><span>Destaques da casa</span></div>
+    <div class="featured-grid">
+      <button class="featured-card" type="button" data-order="Cappuccino" style="--photo: url('assets/sections/cafes.jpg')">
+        <span><strong>Cappuccino</strong><span>A partir de R$ 8,00</span></span>
+      </button>
+      <button class="featured-card" type="button" data-order="Pão c/ Manteiga" style="--photo: url('assets/sections/paes-quentes.jpg')">
+        <span><strong>Pão c/ Manteiga</strong><span>R$ 5,50</span></span>
+      </button>
+      <button class="featured-card" type="button" data-order="Tapioca da Casa" style="--photo: url('assets/sections/tapiocas.jpg')">
+        <span><strong>Tapioca da Casa</strong><span>R$ 29,90</span></span>
+      </button>
+      <button class="featured-card" type="button" data-order="Laranja" style="--photo: url('assets/sections/sucos.jpg')">
+        <span><strong>Suco de Laranja</strong><span>R$ 15,90</span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── MAIS PEDIDOS ── -->
+  <section id="mais-pedidos" class="cat-section">
+    <div class="cat-title">
+      <div class="cat-title-icon">⭐</div>
+      <span class="cat-title-text">Mais Pedidos</span>
+      <div class="cat-title-line"></div>
+      <div class="cat-title-dot"></div>
+    </div>
+
+    <div class="price-header-single">
+      <span class="ph-name">–</span>
+      <span>PREÇO</span>
+    </div>
+
+    <div class="item"><span class="item-code">770</span><div class="item-info"><span class="item-name">Cappuccino</span><p class="item-desc">Pequeno R$ 8,00 · Grande R$ 12,90</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,00</span></span></div>
+    <div class="item"><span class="item-code">676</span><div class="item-info"><span class="item-name">Pão c/ Manteiga</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">5,50</span></span></div>
+    <div class="item"><span class="item-code">074</span><div class="item-info"><span class="item-name">Tapioca da Casa</span><p class="item-desc">Calabresa, bacon, tomate, cebola, azeite, orégano, catupiry e mussarela</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">29,90</span></span></div>
+    <div class="item"><span class="item-code">750</span><div class="item-info"><span class="item-name">X Tudo</span><p class="item-desc">Pão, hambúrguer, frango, calabresa, bacon, ovo, presunto, queijo e salada</p></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">39,90</span></span></div>
+    <div class="item"><span class="item-code">09</span><div class="item-info"><span class="item-name">Laranja</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">15,90</span></span></div>
+    <div class="item"><span class="item-code">1747</span><div class="item-info"><span class="item-name">Croissant de Frango c/ Catupiry</span></div><span class="item-price"><span class="price-currency">R$</span><span class="price-value">8,90</span></span></div>
+  </section>
 
   <!-- ── CAFÉS ── -->
   <section id="cafes" class="cat-section">
@@ -1603,7 +2139,7 @@
 </div><!-- /#main -->
 
 <!-- ── WhatsApp ── -->
-<a id="whatsapp-btn" href="https://wa.me/5513991622975" target="_blank" rel="noopener" title="Fale pelo WhatsApp">
+<a id="whatsapp-btn" href="https://wa.me/5513991622975?text=Ol%C3%A1%2C%20vim%20pelo%20card%C3%A1pio%20da%20Santa%20Helena%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener" title="Fale pelo WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
   </svg>
@@ -1614,16 +2150,114 @@
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
+<button id="back-menu" title="Voltar ao cardápio">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+  </svg>
+  <span>Cardápio</span>
+</button>
+
+<div id="item-modal" class="modal-overlay" aria-hidden="true">
+  <div class="item-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-top">
+      <div>
+        <p class="modal-category" id="modal-category">Cardapio</p>
+        <h2 id="modal-title">Item</h2>
+      </div>
+      <button class="modal-close" id="modal-close" type="button" aria-label="Fechar">×</button>
+    </div>
+    <p class="modal-desc" id="modal-desc"></p>
+    <div class="modal-price-row" id="modal-price"></div>
+    <div class="modal-actions">
+      <a class="modal-whatsapp" id="modal-whatsapp" href="#" target="_blank" rel="noopener">Pedir no WhatsApp</a>
+      <button class="modal-secondary" id="modal-secondary" type="button">Continuar vendo</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const sidebar   = document.getElementById('sidebar');
   const toggle    = document.getElementById('sidebar-toggle');
   const overlay   = document.getElementById('sidebar-overlay');
   const backTop   = document.getElementById('back-top');
+  const backMenu  = document.getElementById('back-menu');
   const navLinks  = document.querySelectorAll('.sidebar-nav a');
   const sections  = document.querySelectorAll('section[id]');
   const searchInput = document.getElementById('search-input');
   const searchClear = document.getElementById('search-clear');
   const noResults   = document.getElementById('no-results');
+  const cardapio    = document.getElementById('cardapio');
+  const featuredStrip = document.querySelector('.featured-strip');
+  const storeStrip = document.querySelector('.store-strip');
+  const quickFilters = document.querySelector('.quick-filters');
+  const itemModal = document.getElementById('item-modal');
+  const modalTitle = document.getElementById('modal-title');
+  const modalCategory = document.getElementById('modal-category');
+  const modalDesc = document.getElementById('modal-desc');
+  const modalPrice = document.getElementById('modal-price');
+  const modalWhatsapp = document.getElementById('modal-whatsapp');
+  const modalClose = document.getElementById('modal-close');
+  const modalSecondary = document.getElementById('modal-secondary');
+  const whatsappPhone = '5513991622975';
+  const defaultWhatsappMessage = 'Olá, vim pelo cardápio da Santa Helena e quero fazer um pedido.';
+
+  function normalizeText(value) {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  function whatsappUrl(message) {
+    return `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`;
+  }
+
+  function openWhatsapp(message) {
+    window.open(whatsappUrl(message || defaultWhatsappMessage), '_blank', 'noopener');
+  }
+
+  function cleanText(value) {
+    return (value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function collectItemData(item) {
+    const name = cleanText(item.querySelector('.item-name')?.textContent);
+    const section = cleanText(item.closest('.cat-section')?.querySelector('.cat-title-text')?.textContent) || 'Cardapio';
+    const desc = cleanText(item.querySelector('.item-desc')?.textContent);
+    let price = cleanText(item.querySelector('.item-price')?.textContent);
+    if (!price && item.querySelector('.item-prices')) {
+      price = Array.from(item.querySelectorAll('.item-prices span')).map(el => cleanText(el.textContent)).join(' / ');
+    }
+    if (!price && item.querySelector('.item-qf')) {
+      price = Array.from(item.querySelectorAll('.qf-row')).map(el => cleanText(el.textContent)).join(' / ');
+    }
+    return { name, section, desc, price };
+  }
+
+  function modalMessage(data) {
+    const context = data.section ? ` (${data.section})` : '';
+    return `Olá, vim pelo cardápio da Santa Helena e quero pedir: ${data.name}${context}`;
+  }
+
+  function openItemModal(data) {
+    if (!data.name) return;
+    modalTitle.textContent = data.name;
+    modalCategory.textContent = data.section || 'Cardapio';
+    modalDesc.textContent = data.desc || 'Toque no botão abaixo para pedir este item pelo WhatsApp.';
+    modalPrice.textContent = data.price || 'Consulte o valor';
+    modalWhatsapp.href = whatsappUrl(modalMessage(data));
+    itemModal.classList.add('open');
+    itemModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    modalClose.focus();
+  }
+
+  function closeItemModal() {
+    itemModal.classList.remove('open');
+    itemModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
 
   // ── Sidebar toggle (mobile)
   function openSidebar() {
@@ -1646,6 +2280,71 @@
     if (window.innerWidth <= 768) closeSidebar();
   }));
 
+  function updateSidebarVisibility() {
+    if (!cardapio) return;
+    const showSidebar = window.innerWidth > 768 && window.scrollY >= cardapio.offsetTop - 8;
+    document.body.classList.toggle('sidebar-visible', showSidebar);
+  }
+  window.addEventListener('scroll', updateSidebarVisibility, { passive: true });
+  window.addEventListener('resize', updateSidebarVisibility);
+  updateSidebarVisibility();
+
+  document.querySelectorAll('.featured-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const itemName = card.dataset.order || card.textContent.trim();
+      const price = cleanText(card.querySelector('strong + span')?.textContent);
+      openItemModal({
+        name: itemName,
+        section: 'Destaques da casa',
+        desc: 'Uma das escolhas em destaque no cardápio Santa Helena.',
+        price
+      });
+    });
+  });
+
+  const badgeMap = {
+    'cappuccino': 'Mais pedido',
+    'pao c/ manteiga': 'Mais pedido',
+    'tapioca da casa': 'Da casa',
+    'x tudo': 'Mais pedido',
+    'laranja': 'Mais pedido',
+    'croissant de frango c/ catupiry': 'Da casa'
+  };
+  document.querySelectorAll('.item').forEach(item => {
+    item.setAttribute('role', 'button');
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('title', 'Ver detalhes');
+    const name = cleanText(item.querySelector('.item-name')?.textContent);
+    const badge = badgeMap[normalizeText(name)];
+    if (badge && !item.querySelector('.item-badge')) {
+      const badgeEl = document.createElement('span');
+      badgeEl.className = 'item-badge';
+      badgeEl.textContent = badge;
+      item.querySelector('.item-info')?.appendChild(badgeEl);
+    }
+    const showItem = () => {
+      openItemModal(collectItemData(item));
+    };
+    item.addEventListener('click', showItem);
+    item.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        showItem();
+      }
+    });
+  });
+
+  modalClose.addEventListener('click', closeItemModal);
+  modalSecondary.addEventListener('click', closeItemModal);
+  itemModal.addEventListener('click', event => {
+    if (event.target === itemModal) closeItemModal();
+  });
+  window.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && itemModal.classList.contains('open')) {
+      closeItemModal();
+    }
+  });
+
   // ── Active link on scroll
   let searchActive = false;
   const observer = new IntersectionObserver(entries => {
@@ -1664,7 +2363,8 @@
   sections.forEach(s => observer.observe(s));
 
   // ── Search
-  function runSearch(q) {
+  function runSearch(rawQuery) {
+    const q = normalizeText(rawQuery);
     searchActive = !!q;
     searchClear.classList.toggle('show', !!q);
     noResults.classList.remove('show');
@@ -1678,11 +2378,17 @@
       seps.forEach(s => s.style.display = '');
       document.querySelectorAll('.item').forEach(i => i.style.display = '');
       pageHeader.style.display = '';
+      if (storeStrip) storeStrip.style.display = '';
+      if (quickFilters) quickFilters.style.display = '';
+      if (featuredStrip) featuredStrip.style.display = '';
       navLinks.forEach(a => a.classList.remove('active'));
       return;
     }
 
     pageHeader.style.display = 'none';
+    if (storeStrip) storeStrip.style.display = 'none';
+    if (quickFilters) quickFilters.style.display = 'none';
+    if (featuredStrip) featuredStrip.style.display = 'none';
     seps.forEach(s => s.style.display = 'none');
 
     let totalVisible = 0;
@@ -1690,7 +2396,7 @@
       const items = section.querySelectorAll('.item');
       let visible = 0;
       items.forEach(item => {
-        const text = item.textContent.toLowerCase();
+        const text = normalizeText(item.textContent);
         const match = text.includes(q);
         item.style.display = match ? '' : 'none';
         if (match) visible++;
@@ -1703,7 +2409,7 @@
   }
 
   searchInput.addEventListener('input', () => {
-    runSearch(searchInput.value.toLowerCase().trim());
+    runSearch(searchInput.value);
   });
   searchClear.addEventListener('click', () => {
     searchInput.value = '';
@@ -1714,6 +2420,12 @@
   // ── Back to top
   window.addEventListener('scroll', () => {
     backTop.classList.toggle('show', window.scrollY > 400);
+    if (cardapio && backMenu) {
+      backMenu.classList.toggle('show', window.scrollY > cardapio.offsetTop + 500);
+    }
+  });
+  backMenu.addEventListener('click', () => {
+    cardapio.scrollIntoView({ behavior: 'smooth' });
   });
 
   // ── Fade-in sections on scroll
